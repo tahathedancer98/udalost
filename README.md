@@ -25,6 +25,6 @@
 
 8. L'installation est terminée, vous pouvez accéder aux API ainsi qu'à la base de données dont voici les URL :
 
-- <a href="https://api.udalost.web:10043/">https://api.udalost.web:10043/</a>
+- <a href="https://api.udalost.back:10043/">https://api.udalost.back:10043/</a>
 - Rajouter ICI les autres API
 - <a href="http://localhost:10380/">http://localhost:10380/</a> => phpMyAdmin
