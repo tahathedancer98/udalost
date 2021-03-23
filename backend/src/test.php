@@ -9,7 +9,7 @@
 function test() {
 
     try {
-        $db = new PDO('mysql:host=db;dbname=com', 'com', 'com',
+        $db = new PDO('mysql:host=db;dbname=udalost', 'udalost', 'udalost',
             [PDO::ATTR_PERSISTENT => true,
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             ]
@@ -18,7 +18,7 @@ function test() {
         print 'could not connect \n';
         print $e->getMessage() . '\n';
     }
-    print '<h1>Backend 1</h1>h1>';
+    print '<h1>Backend 1</h1>';
     print '<h4>connected to mysql </h4>';
     phpinfo();
 }
