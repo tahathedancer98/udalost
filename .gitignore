@@ -1,1 +1,3 @@
-backend/src/vendor/
+backend/backoffice/src/vendor/
+backend/mobileapp/src/vendor/
+backend/webapp/src/vendor/
