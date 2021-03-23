@@ -18,7 +18,7 @@ function test() {
         print 'could not connect \n';
         print $e->getMessage() . '\n';
     }
-    print '<h1>Backend 1</h1>';
+    print '<h1>API WEB</h1>';
     print '<h4>connected to mysql </h4>';
-    phpinfo();
+    // phpinfo();
 }
