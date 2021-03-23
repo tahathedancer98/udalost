@@ -14,8 +14,10 @@ services:
   api.udalost.back:
     image: canals/php:latest
     environment:
-      - VHOST_HOSTNAME=api.udalost.back
+      - VHOST_HOSTNAME=docketu.iutnc.univ-lorraine.fr
       - VHOST_DOCROOT=/var/www/back
+      - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+      - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
     ports:
       - "10080:80"
       - "10043:443"
@@ -36,8 +38,10 @@ services:
   api.udalost.mobile:
     image: canals/php:latest
     environment:
-      - VHOST_HOSTNAME=api.udalost.mobile
+      - VHOST_HOSTNAME=docketu.iutnc.univ-lorraine.fr
       - VHOST_DOCROOT=/var/www/mobile
+      - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+      - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
     ports:
       - "10180:80"
       - "10143:443"
@@ -54,8 +58,10 @@ services:
   api.udalost.web:
     image: canals/php:latest
     environment:
-      - VHOST_HOSTNAME=api.udalost.web
+      - VHOST_HOSTNAME=docketu.iutnc.univ-lorraine.fr
       - VHOST_DOCROOT=/var/www/web
+      - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+      - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
     ports:
       - "10280:80"
       - "10243:443"
@@ -75,6 +81,9 @@ services:
 
   webfront:
     image: httpd:latest
+    environment:
+      - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+      - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
     ports:
       - "10380:80"
     volumes:
