@@ -14,6 +14,7 @@ $app = new \Slim\App($api_container);
 
 \udalost\backend\connection\DataBaseConnection::startEloquent($api_container->settings['db']);
 
+print '<h1>API BACKOFFICE</h1>';
 
 $requete = Utilisateur::select();
 $lignes = $requete->get();
