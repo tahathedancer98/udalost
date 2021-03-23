@@ -1,0 +1,102 @@
+version: "3"
+
+networks:
+  udalost.net:
+    driver: bridge
+
+services:
+
+  ###########
+  # service php / apache utilisant un vhost dont le nom est celui de la machine hôte
+  #
+  #  le service sera accessible à https://docketu.iutnc.univ-lorraine.fr:19043
+  ###########
+
+  api.udalost.back:
+    image: canals/php:latest
+    environment:
+      - VHOST_HOSTNAME=api.udalost.back
+      - VHOST_DOCROOT=/var/www/back
+      # - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+      # - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+    ports:
+      - "10080:80"
+      - "10043:443"
+    volumes:
+      - ./backend/public:/var/www/back
+      - ./backend/src:/var/www/src
+    working_dir: /var/www/src
+    networks:
+      - udalost.net
+    links:
+      - mysql.udalost:db
+
+  ###########
+  # service php / apache utilisant le vhost par défaut
+  #
+  #  le service sera accessible à https://docketu.iutnc.univ-lorraine.fr:19143
+  ###########
+  # back2:
+  #  image: canals/php:latest
+  #  environment:
+  #    - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+  #    - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+  #  ports:
+  #    - "10180:80"
+  #    - "10443:443"
+  #  volumes:
+  #    - ./backend2/public:/var/www/html
+  #    - ./backend2/src:/var/www/src
+  #  working_dir: /var/www/src
+  #  networks:
+  #    - udalost.net
+  #  links:
+  #    - mysql:db
+
+  ###############
+  #  service apache pour la webapp front
+  #  service accessible sur http://docketu.iutnc.univ-lorraine.fr:19280
+  ###############
+
+  api.udalost.web:
+    image: httpd:latest
+    environment:
+      - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+      - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+    ports:
+      - "10180:80"
+    volumes:
+      - ./webapp/public:/usr/local/apache2/htdocs
+    working_dir: /usr/local/apache2/htdocs
+    networks:
+      - udalost.net
+    links:
+      - mysql.udalost:db
+
+  #############################
+  # mysql + phpmyadmin
+  #############################
+  mysql.udalost:
+    image: mariadb:latest
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8 --collation-server=utf8_general_ci
+    environment:
+      - MYSQL_ROOT_PASSWORD=udalost
+      - MYSQL_USER=udalost
+      - MYSQL_PASSWORD=udalost
+      - MYSQL_DATABASE=udalost
+    volumes:
+      - ./backend1/sql:/var/sql
+    networks:
+      - udalost.net
+
+  ####################################
+
+  myadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    ports:
+      - "10380:80"
+    links:
+      - mysql.udalost:db
+
+    networks:
+      - udalost.net
