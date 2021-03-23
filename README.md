@@ -14,7 +14,7 @@
 
 6. En local, il est nécessaire d'aller modifier son fichier <b>"hosts"</b> (sur windows, ouvrir le fichier en tant qu'administrateur, le chemin est le suivant : <b>C:\Windows\System32\drivers\etc\hosts</b>) afin d'y rajouter les routes nécessaires qui sont les suivantes :
 
-- 127.0.0.1 api.udalost.web
+- 127.0.0.1 api.udalost.back
   Implanter encore les autres routes ICI
 
 7. Allez ensuite exécuter le fichier composer.json pour générer les vendor dans chaque conteneur docker en suivant les indications suivantes :
