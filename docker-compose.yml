@@ -5,7 +5,6 @@ networks:
     driver: bridge
 
 services:
-
   ###########
   # service php / apache utilisant un vhost dont le nom est celui de la machine hôte
   #
@@ -17,8 +16,8 @@ services:
     environment:
       - VHOST_HOSTNAME=api.udalost.back
       - VHOST_DOCROOT=/var/www/back
-      # - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
-      # - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+      - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+      - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
     ports:
       - "10080:80"
       - "10043:443"
@@ -85,7 +84,7 @@ services:
       - MYSQL_PASSWORD=udalost
       - MYSQL_DATABASE=udalost
     volumes:
-      - ./backend1/sql:/var/sql
+      - ./sql:/var/sql
     networks:
       - udalost.net
 
