@@ -14,8 +14,6 @@
 
 6. En local, il est nécessaire d'aller modifier son fichier <b>"hosts"</b> (sur windows, ouvrir le fichier en tant qu'administrateur, le chemin est le suivant : <b>C:\Windows\System32\drivers\etc\hosts</b>) afin d'y rajouter les routes nécessaires qui sont les suivantes :
 
-# Projet Atelier 1 - Udalost
-
 - 127.0.0.1 api.udalost.web
   Implanter encore les autres routes ICI
 
