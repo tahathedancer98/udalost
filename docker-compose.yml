@@ -17,8 +17,8 @@ services:
     environment:
       - VHOST_HOSTNAME=api.udalost.back
       - VHOST_DOCROOT=/var/www/back
-      # - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
-      # - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+      - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
+      - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
     ports:
       - "10080:80"
       - "10043:443"
@@ -29,7 +29,7 @@ services:
     networks:
       - udalost.net
     links:
-      - mysql.udalost:db
+      - mysql:db
 
   ###########
   # service php / apache utilisant le vhost par défaut
@@ -71,12 +71,12 @@ services:
     networks:
       - udalost.net
     links:
-      - mysql.udalost:db
+      - mysql:db
 
   #############################
   # mysql + phpmyadmin
   #############################
-  mysql.udalost:
+  mysql:
     image: mariadb:latest
     command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8 --collation-server=utf8_general_ci
     environment:
@@ -85,7 +85,7 @@ services:
       - MYSQL_PASSWORD=udalost
       - MYSQL_DATABASE=udalost
     volumes:
-      - ./backend1/sql:/var/sql
+      - ./sql:/var/sql
     networks:
       - udalost.net
 
@@ -96,7 +96,7 @@ services:
     ports:
       - "10380:80"
     links:
-      - mysql.udalost:db
+      - mysql:db
 
     networks:
       - udalost.net
