@@ -19,7 +19,7 @@
 
 7. Allez ensuite exécuter le fichier composer.json pour générer les vendor dans chaque conteneur docker en suivant les indications suivantes :
 
-- Connectez vous au container via la commande <b>docker exec -it udalost_api.udalost.web_1 /bin/bash</b>
+- Connectez vous au container via la commande <b>docker exec -it udalost_api.udalost.back_1 /bin/bash</b>
 - Exécuter le composer.json en faisant <b>composer install</b> puis patientez le temps que cela se termine
 - Répétez l'action pour les autres API donc en modifiant la commande du docker exec -it (à déterminer encore)
 
