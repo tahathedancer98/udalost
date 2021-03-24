@@ -27,7 +27,6 @@ class UserController {
 
       //* Mise en forme de tous les utilisateurs dans un tableau
       $users_array = [];
-
       foreach ($users as $user) {
         $users_array[] = [
           "utilisateur"=>[
@@ -48,7 +47,7 @@ class UserController {
       $data = [
         'type' => 'collection',
         'count' => count($users),
-        'users' => $users_array
+        'utilisateurs' => $users_array
       ];
 
       return Writer::json_output($rs, 200, $data);
@@ -65,11 +64,32 @@ class UserController {
 
     try {
       $user = Utilisateur::select(['id', 'nom', 'prenom', 'email', 'username', 'token', 'derniere_connexion'])->with('evenements')->where('id', '=', $id)->where('token', '=', $token)->firstOrFail();
+
+      $evenementsCrees = $user->evenementsCrees()->select(['id', 'titre', 'description', 'date', 'heure', 'latitude', 'longitude', 'adresse', 'codePostal', 'ville', 'pays', 'type'])->get();
+
+      //* Mise en forme des événements créés par l'utilisateur
+      $eventsCreated_array = [];
+      foreach ($evenementsCrees as $evenementCree) {
+        $eventsCreated_array[] = [
+          "evenementCree"=>[
+            "id" => $evenementCree->id,
+            "titre" => $evenementCree->titre,
+            "description" => $evenementCree->description,
+            "date" => $evenementCree->date,
+            "heure" => $evenementCree->heure,
+            "latitude" => $evenementCree->latitude,
+            "longitude" => $evenementCree->longitude,
+            "adresse" => $evenementCree->adresse,
+            "codePostal" => $evenementCree->codePostal,
+            "ville" => $evenementCree->ville,
+            "pays" => $evenementCree->pays,
+            "type" => $evenementCree->type,
+          ]
+        ];
+      }
       
       //* Mise en forme de tous les événements de l'utilisateur
       $events_array = [];
-
-      //* Mise en forme de tous les événements
       foreach ($user->evenements as $event) {
         $events_array[] = [
           "evenement"=>[
@@ -88,8 +108,7 @@ class UserController {
           ],
           "links"=>[
             "self" => ['href' => $this->c->router->pathFor('evenement', ['id'=> $event->id])],
-        ]
-      ];
+        ]];
       }
       
       //* Mise en forme de tous les attributs de la ressource
@@ -101,13 +120,14 @@ class UserController {
           "username" => $user->username,
           "token" => $user->token,
           "derniere_connexion" => date('Y-m-d', strtotime($user->derniere_connexion)),
-          "events" => $events_array,
+          "evenements" => $events_array,
+          "evenementsCrees" => $eventsCreated_array,
         ];
 
       //* Mise en forme de la ressource
       $data = [
         'type' => 'resource',
-        'user' => $user_array,
+        'utilisateur' => $user_array,
       ];
 
       return Writer::json_output($rs, 200, $data);
