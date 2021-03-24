@@ -11,6 +11,10 @@ class Utilisateur extends Model {
 	public $incrementing = false;   // pas d'auto incrementation
 	public $keyType = 'string';		// id sous forme de string
 
+	public function evenementsCrees() {
+		return $this->hasMany('udalost\webapp\models\Evenement', 'id_utilisateur');
+	}
+
   public function evenements() {
 		return $this->belongsToMany('udalost\webapp\models\Evenement', // Table cible
 	           						'participant', // Table Pivot

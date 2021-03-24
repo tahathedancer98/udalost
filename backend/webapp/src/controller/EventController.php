@@ -71,7 +71,10 @@ class EventController {
 
     try {
       $event = Evenement::select(['id', 'titre', 'description', 'date', 'heure', 'latitude', 'longitude', 'adresse', 'codePostal', 'ville', 'pays', 'type', 'id_utilisateur'])->with('participants')->where('id', '=', $id)->firstOrFail();
-      
+
+      $participantsNonInscrits = $event->participantsNonInscrits()->get();
+      $createur = $event->createur()->select(['id', 'nom', 'prenom', 'email', 'username', 'token', 'derniere_connexion'])->get();
+
       $participants_array = [];
 
       //* Mise en forme de tous les participants
@@ -79,34 +82,18 @@ class EventController {
         $participants_array[] = [
           "participant"=>[
             "id_utilisateur" => $participant->pivot->id_utilisateur,
-            "nom" => $participant->pivot->nom,
+            "nom" => $participant->nom,
+            "prenom" => $participant->prenom,
+            "email" => $participant->email,
+            "username" => $participant->username,
+            "token" => $participant->token,
+            "derniere_connexion" => date('Y-m-d', strtotime($participant->derniere_connexion)),
+            // "nom" => $participant->pivot->nom,
             "status" => $participant->pivot->status,
             "message" => $participant->pivot->message,
           ],
         ];
       }
-
-      // //* Mise en forme de tous les utilisateurs (ceux inscrits) de l'événement
-      // $users_array = [];
-
-      // //* Mise en forme de tous les utilisateurs
-      // foreach ($event->utilisateurs as $user) {
-      //   $users_array[] = [
-      //     "utilisateur"=>[
-      //       "id" => $user->id,
-      //       "nom" => $user->nom,
-      //       "prenom" => $user->prenom,
-      //       "email" => $user->email,
-      //       "username" => $user->username,
-      //       "token" => $user->token,
-      //       "derniere_connexion" => date('Y-m-d', strtotime($user->derniere_connexion)),
-      //       "message" => $user->pivot->message,
-      //     ],
-      //     "links"=>[
-      //       "self" => ['href' => $this->c->router->pathFor('utilisateur', ['id'=> $user->id])],
-      //     ]
-      //   ];
-      // }
       
       //* Mise en forme de tous les attributs de la ressource
       $event_array[] = [
@@ -122,8 +109,9 @@ class EventController {
           "ville" => $event->ville,
           "pays" => $event->pays,
           "type" => $event->type,
-          // "users" => $users_array,
+          "createur" => $createur,
           "participants" => $participants_array,
+          "participantsNonInscrits" => $participantsNonInscrits,
         ];
 
       //* Mise en forme de la ressource

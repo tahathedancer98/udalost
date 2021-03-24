@@ -24,7 +24,7 @@ DataBaseConnection::startEloquent($api_container->settings['db']);
 
 
 
-// print '<h1>API BACKOFFICE</h1>';
+// print '<h1>API WEB</h1>';
 
 //* Les objets de type requête
 $app->get('/utilisateurs[/]', UserController::class . ':users')->setName('utilisateurs');

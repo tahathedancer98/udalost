@@ -1,6 +1,6 @@
 <?php
 
-namespace udalost\webapp\models;
+namespace udalost\backend\models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;  
