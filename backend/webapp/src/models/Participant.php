@@ -1,10 +1,10 @@
 <?php
 
-namespace udalost\backend\models;
+namespace udalost\webapp\models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;  
-use udalost\backend\models\Commentaire as Commentaire;
+use udalost\webapp\models\Commentaire as Commentaire;
 
 class Participant extends Model {
   protected $table = 'participant';

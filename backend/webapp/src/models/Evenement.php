@@ -1,10 +1,10 @@
 <?php
 
-namespace udalost\backend\models;
+namespace udalost\webapp\models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;  
-use udalost\backend\models\Utilisateur as Utilisateur;
+use udalost\webapp\models\Utilisateur as Utilisateur;
 
 class Utilisateur extends Model {
   protected $table = 'evenement';
