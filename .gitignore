@@ -1,3 +1,6 @@
 backend/backoffice/src/vendor/
+backend/backoffice/src/composer.lock/
 backend/mobileapp/src/vendor/
+backend/mobileapp/src/composer.lock/
 backend/webapp/src/vendor/
+backend/webapp/src/composer.lock/
