@@ -1,23 +1,39 @@
 <?php
 
-require_once __DIR__ . '/../src/vendor/autoload.php' ;
+require_once  __DIR__ . '/../src/vendor/autoload.php';
+
+use udalost\webapp\connection\DataBaseConnection;
+use udalost\webapp\controller\UserController;
+// use udalost\webapp\middlewares\DataValidation;
+// use udalost\webapp\middlewares\JwtToken;
+// use udalost\webapp\middlewares\Token;
+// use Symfony\Component\Console\Command\Command;
 
 $api_settings = require_once __DIR__ . '/../src/conf/api_settings.php';
 $api_errors = require_once __DIR__ . '/../src/conf/api_errors.php';
-
-//use udalost\backend\controller\CommandeController;
-use udalost\webapp\models\Utilisateur as Utilisateur;
 
 $api_container = new \Slim\Container(array_merge($api_settings, $api_errors));
 
 $app = new \Slim\App($api_container);
 
-\udalost\webapp\connection\DataBaseConnection::startEloquent($api_container->settings['db']);
 
-print '<h1>API WEB</h1>';
+//*Config et Connexion à la BDD
+DataBaseConnection::startEloquent($api_container->settings['db']);
 
-$requete = Utilisateur::select();
-$lignes = $requete->get();
-foreach ($lignes as $v) {
-  echo "<br>Nom du propriétaire : $v->nom";
-}
+
+
+
+// print '<h1>API BACKOFFICE</h1>';
+
+//* Les objets de type requête
+$app->get('/utilisateurs[/]', UserController::class . ':users')->setName('utilisateurs');
+
+
+
+//* Déclenche le traitement par le framework de la requête courante et la compare dans l'ordre de chacune des routes
+$app->run();
+// try {
+//   $app->run();
+// } catch (Throwable $e) {
+
+// }
