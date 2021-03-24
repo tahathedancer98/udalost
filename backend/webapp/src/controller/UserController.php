@@ -37,10 +37,11 @@ class UserController {
             "username" => $user->username,
             "token" => $user->token,
             "derniere_connexion" => date('Y-m-d', strtotime($user->derniere_connexion)),
+            "links"=>[
+              "self" => ['href' => $this->c->router->pathFor('utilisateur', ['id'=> $user->id], ['token' => $user->token])],
+            ],
           ],
-          "links"=>[
-            "self" => ['href' => $this->c->router->pathFor('utilisateur', ['id'=> $user->id], ['token' => $user->token])],
-        ]];
+        ];
       }
 
       //* Mise en forme de la collection d'utilisateurs
@@ -84,6 +85,9 @@ class UserController {
             "ville" => $evenementCree->ville,
             "pays" => $evenementCree->pays,
             "type" => $evenementCree->type,
+            "links"=>[
+              "self" => ['href' => $this->c->router->pathFor('evenement', ['id'=> $evenementCree->id])],
+            ],
           ]
         ];
       }
@@ -105,10 +109,11 @@ class UserController {
             "ville" => $event->ville,
             "pays" => $event->pays,
             "type" => $event->type,
-          ],
-          "links"=>[
-            "self" => ['href' => $this->c->router->pathFor('evenement', ['id'=> $event->id])],
-        ]];
+            "links"=>[
+              "self" => ['href' => $this->c->router->pathFor('evenement', ['id'=> $event->id])],
+            ],
+          ]
+        ];
       }
       
       //* Mise en forme de tous les attributs de la ressource

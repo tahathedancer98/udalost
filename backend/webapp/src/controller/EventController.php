@@ -42,10 +42,11 @@ class EventController {
             "ville" => $event->ville,
             "pays" => $event->pays,
             "type" => $event->type,
+            "links"=>[
+              "self" => ['href' => $this->c->router->pathFor('evenement', ['id'=> $event->id])],
+            ]
           ],
-          "links"=>[
-            "self" => ['href' => $this->c->router->pathFor('evenement', ['id'=> $event->id])],
-        ]];
+        ];
       }
 
       //* Mise en forme de la collection d'utilisateurs
