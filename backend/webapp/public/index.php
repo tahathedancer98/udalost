@@ -4,6 +4,7 @@ require_once  __DIR__ . '/../src/vendor/autoload.php';
 
 use udalost\webapp\connection\DataBaseConnection;
 use udalost\webapp\controller\UserController;
+use udalost\webapp\controller\EventController;
 // use udalost\webapp\middlewares\DataValidation;
 // use udalost\webapp\middlewares\JwtToken;
 // use udalost\webapp\middlewares\Token;
@@ -32,6 +33,10 @@ $app->get('/utilisateurs/{id}[/]', UserController::class . ':aUser')
     // ->add(Token::class . ':checkToken')
     ->setName('utilisateur');
 
+$app->get('/evenements[/]', EventController::class . ':events')->setName('evenements');
+
+$app->get('/evenements/{id}[/]', EventController::class . ':anEvent')
+    ->setName('evenement');
 
 //* Déclenche le traitement par le framework de la requête courante et la compare dans l'ordre de chacune des routes
 try {

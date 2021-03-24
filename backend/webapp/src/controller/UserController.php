@@ -29,7 +29,6 @@ class UserController {
       $users_array = [];
 
       foreach ($users as $user) {
-
         $users_array[] = [
           "utilisateur"=>[
             "id" => $user->id,
@@ -86,12 +85,11 @@ class UserController {
             "ville" => $event->ville,
             "pays" => $event->pays,
             "type" => $event->type,
-            "id_utilisateur" => $event->id_utilisateur,
           ],
-          // "links"=>[
-          //   "self"=> $event->uri
-          // ]
-        ];
+          "links"=>[
+            "self" => ['href' => $this->c->router->pathFor('evenement', ['id'=> $event->id])],
+        ]
+      ];
       }
       
       //* Mise en forme de tous les attributs de la ressource
