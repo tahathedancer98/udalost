@@ -28,12 +28,14 @@ DataBaseConnection::startEloquent($api_container->settings['db']);
 //* Les objets de type requête
 $app->get('/utilisateurs[/]', UserController::class . ':users')->setName('utilisateurs');
 
+$app->get('/utilisateurs/{id}[/]', UserController::class . ':aUser')
+    // ->add(Token::class . ':checkToken')
+    ->setName('utilisateur');
 
 
 //* Déclenche le traitement par le framework de la requête courante et la compare dans l'ordre de chacune des routes
-$app->run();
-// try {
-//   $app->run();
-// } catch (Throwable $e) {
+try {
+  $app->run();
+} catch (Throwable $e) {
 
-// }
+}
