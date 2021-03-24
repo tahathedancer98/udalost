@@ -6,15 +6,15 @@ $api_settings = require_once __DIR__ . '/../src/conf/api_settings.php';
 $api_errors = require_once __DIR__ . '/../src/conf/api_errors.php';
 
 //use udalost\backend\controller\CommandeController;
-use udalost\backend\models\Utilisateur as Utilisateur;
+use udalost\webapp\models\Utilisateur as Utilisateur;
 
 $api_container = new \Slim\Container(array_merge($api_settings, $api_errors));
 
 $app = new \Slim\App($api_container);
 
-\udalost\backend\connection\DataBaseConnection::startEloquent($api_container->settings['db']);
+\udalost\webapp\connection\DataBaseConnection::startEloquent($api_container->settings['db']);
 
-print '<h1>API BACKOFFICE</h1>';
+print '<h1>API WEB</h1>';
 
 $requete = Utilisateur::select();
 $lignes = $requete->get();
