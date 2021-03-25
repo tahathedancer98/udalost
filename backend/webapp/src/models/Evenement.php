@@ -10,6 +10,7 @@ class Evenement extends Model {
   protected $primaryKey = 'id';
 	public $incrementing = false;   // pas d'auto incrementation
 	public $keyType = 'string';		// id sous forme de string
+	public $timestamps = false; // By default laravel will expect created_at & updated_at column in your table. By making it to false it will override the default setting.
 
 	public function createur() {
 		return $this->belongsTo('udalost\webapp\models\Utilisateur', 'id_utilisateur');

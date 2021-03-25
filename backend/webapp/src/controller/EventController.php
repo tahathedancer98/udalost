@@ -159,4 +159,47 @@ class EventController {
       return Writer::json_error($rs, 404, "event $id not found");
     }
   }
+  public function addEvent(Request $rq, Response $rs, array $args) : Response {
+    if($rq->getAttribute('has_errors')){
+      return Writer::json_error($rs, 400, $rq->getAttribute('errors'));
+    }
+
+    $event_data = $rq->getParsedBody();
+
+    try {
+
+      $c = new Evenement();
+
+      $c->id = Uuid::uuid4();
+      // $c->nom = filter_var($event_data['nom_client'], FILTER_SANITIZE_STRING);
+      // $c->mail = filter_var($event_data['mail_client'], FILTER_SANITIZE_EMAIL);
+      // $c->livraison = \Datetime::createFromFormat('d-m-Y H:i',
+      //   $event_data['livraison']['date'] . ' ' .
+      //   $event_data['livraison']['heure']);
+      // $c->status = Evenement::CREATED;
+
+      // $c->token = bin2hex(random_bytes(32));
+      $c->titre = 'Test pour créer un événement';
+      $c->description = 'La description super précise sur le test';
+      $c->date = '2100-01-25';
+      $c->heure = '22:30:00';
+      $c->latitude = '48.039549';
+      $c->longitude = '7.418101';
+      $c->adresse = '12 rue du Riesling';
+      $c->codePostal = '68280';
+      $c->ville = 'Sundhoffen';
+      $c->pays = 'France';
+      $c->type = 0;
+      $c->id_utilisateur = '3fe96bf8-8bb3-11eb-8dcd-0242ac130003';
+
+      $c->save();
+
+      return Writer::json_output($rs, 201, ['evenement'=> $c])
+        ->withHeader('Location', $this->c->router->pathFor('evenement', ['id'=> $c->id]));
+
+    } catch (\Exception $e) {
+      return Writer::json_error($rs, 500, $e->getMessage());
+    }
+
+  }
 }

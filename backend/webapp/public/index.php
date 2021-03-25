@@ -6,11 +6,10 @@ use udalost\webapp\connection\DataBaseConnection;
 use udalost\webapp\controller\UserController;
 use udalost\webapp\controller\EventController;
 use udalost\webapp\middlewares\Cors;
-
-// use udalost\webapp\middlewares\DataValidation;
-// use udalost\webapp\middlewares\JwtToken;
-// use udalost\webapp\middlewares\Token;
-// use Symfony\Component\Console\Command\Command;
+use udalost\webapp\middlewares\DataValidation;
+use udalost\webapp\middlewares\JwtToken;
+use udalost\webapp\middlewares\Token;
+use Symfony\Component\Console\Command\Command;
 
 $api_settings = require_once __DIR__ . '/../src/conf/api_settings.php';
 $api_errors = require_once __DIR__ . '/../src/conf/api_errors.php';
