@@ -217,115 +217,53 @@ class UserController {
         }
     }
 
-    /*public function loginUser(Request $req, Response $res,array $args): Response{
+    public function loginUser(Request $rq, Response $rs, array $args) : Response {
 
-        if($req->hasHeader('Authorization')){
 
-            $id = $args['id'];
-            $auth = base64_decode(explode(" ",$req->getHeader('Authorization')[0])[1]);
-            list($user,$pass) = explode(':',$auth);
-    
-            try{
-                $carte_fidelite = Carte_fidelite::select('id','nom_client','mail_client','passwd')->where('id','=',$id)->firstOrFail();
-    
-                if(!password_verify($pass, $carte_fidelite->passwd)){
-                    throw new \Exception("Password failed");
-                }
-                
-                unset($carte_fidelite->passwd);
-    
-                $token = JWT::encode([
-                    'iss' => 'http://api.fidelisation.local/'.$id.'/auth',
-                    'aud' => 'http://api.fidelisation.local',
-                    'iat' => time(),
-                    'exp' => time()+3600,
-                    'cid' => $carte_fidelite->id
-                ], $this->c->settings['secrets'], 'HS512');
-        
-                $data = [
-                    'Carte' => $carte_fidelite->toArray(),
-                    'JWT' => $token
-                ];
-                $res = $res->withStatus(200)->withHeader('Content-Type','application/json');
-                $res->getBody()->write(json_encode($data));
+      if (!$rq->hasHeader('Authorization')) {
+          $rs = $rs->withStatus(401)->withHeader('WWW-authenticate', 'Basic realm="api de login"');
+          return Writer::json_error($rs, 401, 'Pas de header Authorization');
+      }
+  
+      $tab_auth = explode(':', base64_decode(explode(" ", $rq->getHeader('Authorization')[0])[1]));
+      $email = $tab_auth[0];
+      $motpasse = $tab_auth[1];
+  
+  
+      try {
+          $user = Utilisateur::select('id', 'email', 'motpasse')
+              ->where('email', '=', $email)
+              ->firstOrFail();
+  
+          if (!password_verify($motpasse, $user->motpasse)) {
+              throw new \Exception('Mauvais mot de passe');
+          }
+  
+      } catch (ModelNotFoundException $e) {
+          $rs = $rs->withStatus(401)->withHeader('WWW-authenticate', 'Basic realm="api de login"');
+          return Writer::json_error($rs, 401, 'Erreur Authentification');
+      } catch (\Exception $e) {
+          $rs = $rs->withStatus(401)->withHeader('WWW-authenticate', 'Basic realm="api de login"');
+          return Writer::json_error($rs, 401, 'Erreur Authentification');
+      }
+  
+      $secret = $this->c->settings['secret'];
+      
+      $data[] = ["utilisateur" => $secret];
+      $token = JWT::encode( ['iss' => 'https://api.udalost.web:10243/login',
+          'aud' => 'https://api.udalost.web:10243',
+          'lat' => time(),
+          'exp' => time()+(12*30*24*3600),
+          'cid' => $user->id ],
+          $secret, 'HS512'); 
 
-                return $res;
-
-            }catch(\Exception $e){
-                $res = $res->withStatus(500)->withHeader('Content-Type','application/json');
-                $res->getBody()->write(json_encode($res));
-                return $res;
-            }
-
-        }else{
-            $res = $res->withStatus(401)->withHeader('Content-Type','application/json');
-            $res->getBody()->write(
-                json_encode(
-                    array(
-                        'type' => 'error',
-                        'error' => 401,
-                        'message' => 'no authorization header present'
-                    )
-                )
-            );
-
-            return $res;
-        }
+      $data = [
+      'utilisateur' => $user,
+      'jwt-token' => $token
+      ];
+  
+      return Writer::json_output($rs, 200, $data);
+      
     }
-*/
-
-
-    public function loginUser(Request $req, Response $res, array $args) : Response {
-
-
-    if (!$req->hasHeader('Authorization')) {
-        $res = $res->withStatus(401)->withHeader('WWW-authenticate', 'Basic realm="api de login"');
-        return Writer::json_error($res, 401, 'Pas de header Authorization');
-    }
-
-    $tab_auth = explode(':', base64_decode(explode(" ", $req->getHeader('Authorization')[0])[1]));
-    $email = $tab_auth[0];
-    $motpasse = $tab_auth[1];
-
-
-    try {
-        $user = Utilisateur::select('id', 'email', 'motpasse')
-            ->where('email', '=', $email)
-            ->where('id', '=', $args['id'])
-            ->firstOrFail();
-
-        if (!password_verify($motpasse, $user->motpasse)) {
-            throw new \Exception('mauvais password');
-        }
-
-    } catch (ModelNotFoundException $e) {
-        $res = $res->withStatus(401)->withHeader('WWW-authenticate', 'Basic realm="api de login"');
-        return Writer::json_error($res, 401, 'Erreur Authentification');
-    } catch (\Exception $e) {
-        $res = $res->withStatus(401)->withHeader('WWW-authenticate', 'Basic realm="api de login"');
-        return Writer::json_error($res, 401, 'Erreur Authentification');
-    }
-
-    $secret = $this->c->settings['secret'];
-    
-    $data[] = ["utilisateur" => $secret];
-    $token = JWT::encode( ['iss' => 'http://api.udalost.web:10243/login',
-        'aud' => 'http://api.udalost.web:10243',
-        'lat' => time(),
-        'exp' => time()+3600,
-        'cid' => $user->id ],
-        $secret, 'HS512'); 
-
-
-
-    $data = [
-    'utilisateur' => $user,
-    'jwt-token' => $token
-    ];
-
-    return Writer::json_output($res, 200, $data);
-    
-  }
-
 
   }
