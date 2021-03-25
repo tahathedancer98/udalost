@@ -42,6 +42,9 @@ $app->get('/evenements/{id}[/]', EventController::class . ':anEvent')
 
 $app->post('/utilisateurs[/]', UserController::class.':createUser')->setName('newUtilisateur');
 
+$app->post('/login[/]', UserController::class.':loginUser')->setName('loginUtilisateur');
+
+
 //* Déclenche le traitement par le framework de la requête courante et la compare dans l'ordre de chacune des routes
 try {
   $app->run();

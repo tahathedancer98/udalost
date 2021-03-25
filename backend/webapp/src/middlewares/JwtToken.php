@@ -1,10 +1,10 @@
 <?php
 
-namespace lbs\commande\middlewares;
+namespace udalost\webapp\middlewares;
 
 use Exception;
 use Firebase\JWT\JWT;
-use lbs\commande\utils\Writer;
+use udalost\webapp\utils\Writer;
 use \Psr\Http\Message\ResponseInterface as Response;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 

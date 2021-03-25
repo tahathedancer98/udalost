@@ -1,10 +1,10 @@
 <?php
 
-namespace lbs\commande\middlewares;
+namespace udalost\webapp\middlewares;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use lbs\commande\utils\Writer;
-use lbs\commande\models\Commande;
+use udalost\webapp\utils\Writer;
+use udalost\webapp\models\Utilisateur;
 use \Psr\Http\Message\ResponseInterface as Response;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 
