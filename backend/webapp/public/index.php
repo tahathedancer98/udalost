@@ -22,13 +22,10 @@ $app = new \Slim\App($api_container);
 //*Config et Connexion à la BDD
 DataBaseConnection::startEloquent($api_container->settings['db']);
 
-<<<<<<< Updated upstream
 
 
 
 // print '<h1>API WEB</h1>';
-=======
->>>>>>> Stashed changes
 
 //* Les objets de type requête
 $app->get('/utilisateurs[/]', UserController::class . ':users')->setName('utilisateurs');
