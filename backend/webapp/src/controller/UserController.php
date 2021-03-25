@@ -3,12 +3,23 @@
 namespace udalost\webapp\controller;
 
 use Slim\Router;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
 use udalost\webapp\utils\Writer;
 use udalost\webapp\models\Utilisateur;
+
 use \Psr\Http\Message\ResponseInterface as Response;
 use \Psr\Http\Message\ServerRequestInterface as Request;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+
+use Firebase\JWT\JWT;
+use Firebase\JWT\ExpiredException;
+use Firebase\JWT\SignatureInvalidException ;
+use Firebase\JWT\BeforeValidException;
+
+use GuzzleHttp\Client;
 use Ramsey\Uuid\Uuid;
+
 
 class UserController {
 
@@ -143,4 +154,67 @@ class UserController {
       return Writer::json_error($rs, 404, "user $id not found");
     }
   }
-}
+
+
+  public function createUser(Request $req, Response $res,array $args): Response {
+
+       if (!$req->getAttribute('has_errors')) {
+          $json_data = $req->getParsedBody();
+
+            if(!isset($json_data['nom'])){
+              return Writer::json_error($res, 400, "Missing data: nom");
+            }
+
+             if(!isset($json_data['prenom'])){
+              return Writer::json_error($res, 400, "Missing data: prenom");
+            }
+
+            if(!isset($json_data['email'])){
+              return Writer::json_error($res, 400, "Missing data: email");
+            }
+
+            if(!isset($json_data['motpasse'])){
+              return Writer::json_error($res, 400, "Missing data: password");
+            }
+
+            try{
+                $user = new Client(["base_uri" => $this->c->settings['url_udalost']]);
+                $nom = $json_data["nom"];
+                $prenom = $json_data["prenom"];
+                $username = $json_data["username"];
+                $email = $json_data["email"];
+                $motpasse = $json_data["motpasse"];
+                $getBody = json_decode($req->getBody());
+
+                $token = random_bytes(32);
+                $token = bin2hex($token);
+                //$token = $req->getQueryParam('token', null);
+
+                $c = new Utilisateur();
+
+                $c->id = Uuid::uuid4();
+                $c->nom = (filter_var($nom, FILTER_SANITIZE_STRING));
+                $c->prenom = (filter_var($prenom, FILTER_SANITIZE_STRING));
+                $c->username = (filter_var($username, FILTER_SANITIZE_STRING));
+                $c->email = (filter_var($email, FILTER_SANITIZE_EMAIL));
+                $c->motpasse = (password_hash($motpasse, PASSWORD_DEFAULT));
+                $c->token = $token;
+
+                $c->save();
+
+
+                $uri = $req->getUri();
+                $baseUrl = $uri->getBaseUrl();
+
+
+                return Writer::json_output($res, 201, ['utilisateurs'=>$c->toArray()])
+                  ->withHeader('Location', $baseUrl.$this->c['router']->pathFor('utilisateur', ['id'=>$c->id]));
+            }catch(Expeption $e){
+                return Writer::json_error($res, 500, $e->getMessage());
+            }
+        } else {
+            return Writer::json_error($res, 400, $req->getAttribute('errors'));
+        }
+    }
+
+  }

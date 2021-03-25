@@ -5,6 +5,8 @@ require_once  __DIR__ . '/../src/vendor/autoload.php';
 use udalost\webapp\connection\DataBaseConnection;
 use udalost\webapp\controller\UserController;
 use udalost\webapp\controller\EventController;
+use udalost\webapp\middlewares\Cors;
+
 // use udalost\webapp\middlewares\DataValidation;
 // use udalost\webapp\middlewares\JwtToken;
 // use udalost\webapp\middlewares\Token;
@@ -21,10 +23,14 @@ $app = new \Slim\App($api_container);
 //*Config et Connexion à la BDD
 DataBaseConnection::startEloquent($api_container->settings['db']);
 
+<<<<<<< Updated upstream
 
 
 
 // print '<h1>API WEB</h1>';
+=======
+// print '<h1>API BACKOFFICE</h1>';
+>>>>>>> Stashed changes
 
 //* Les objets de type requête
 $app->get('/utilisateurs[/]', UserController::class . ':users')->setName('utilisateurs');
@@ -37,6 +43,9 @@ $app->get('/evenements[/]', EventController::class . ':events')->setName('evenem
 
 $app->get('/evenements/{id}[/]', EventController::class . ':anEvent')
     ->setName('evenement');
+
+
+$app->post('/utilisateurs[/]', UserController::class.':createUser')->setName('newUtilisateur');
 
 //* Déclenche le traitement par le framework de la requête courante et la compare dans l'ordre de chacune des routes
 try {

@@ -1,6 +1,10 @@
 <?php
 
+<<<<<<< Updated upstream
 namespace udalost\backend\models;
+=======
+namespace udalost\backoffice\models;
+>>>>>>> Stashed changes
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;  
