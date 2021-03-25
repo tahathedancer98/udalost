@@ -33,25 +33,26 @@ class JwtToken{
                 return Writer::json_error($rs, 401, $e);
             }
 
-            $token_carte_id = $token->cid;
+            
 
             
             $body_data = $rq->getParsedBody();
 
-            if (is_null($body_data) || is_null($body_data['id_carte'])) {
-                return Writer::json_error($rs, 400, "Pas d'id de carte");  
+            if (is_null($body_data) || is_null($body_data['id'])) {
+                return Writer::json_error($rs, 400, "Pas d'id d'utilisateur'");  
             }
 
-            $route_carte_id = $rq->getParsedBody()['id_carte'];
+            // $token_carte_id = $token->cid;
+            // $route_carte_id = $rq->getParsedBody()['id'];
 
-            if ($route_carte_id != $token_carte_id) {
-                return Writer::json_error($rs, 401, 'Carte de Paiement invalide');
-            }
+            // if ($route_carte_id != $token_carte_id) {
+            //     return Writer::json_error($rs, 401, 'Carte de Paiement invalide');
+            // }
 
-            $rq = $rq->withAttribute('fidelisation_token', $token);
+            $rq = $rq->withAttribute('token', $token);
 
         }else{
-            $rq = $rq->withAttribute('fidelisation_token', false);
+            $rq = $rq->withAttribute('token', false);
         }
         
         $rs = $next($rq, $rs);

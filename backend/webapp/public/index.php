@@ -28,21 +28,23 @@ DataBaseConnection::startEloquent($api_container->settings['db']);
 // print '<h1>API WEB</h1>';
 
 //* Les objets de type requête
-$app->get('/utilisateurs[/]', UserController::class . ':users')->setName('utilisateurs');
+$app->get('/utilisateurs[/]', UserController::class . ':users')->setName('utilisateurs')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
 
 $app->get('/utilisateurs/{id}[/]', UserController::class . ':aUser')
     // ->add(Token::class . ':checkToken')
-    ->setName('utilisateur');
+    ->setName('utilisateur')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
 
-$app->get('/evenements[/]', EventController::class . ':events')->setName('evenements');
+$app->get('/evenements[/]', EventController::class . ':events')->setName('evenements')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
 
 $app->get('/evenements/{id}[/]', EventController::class . ':anEvent')
-    ->setName('evenement');
+    ->setName('evenement')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
 
 
-$app->post('/utilisateurs[/]', UserController::class.':createUser')->setName('newUtilisateur');
+$app->post('/utilisateurs[/]', UserController::class.':createUser')->setName('newUtilisateur')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
 
-$app->post('/login[/]', UserController::class.':loginUser')->setName('loginUtilisateur');
+$app->post('/login[/]', UserController::class.':loginUser')->setName('loginUtilisateur')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
+
+$app->post('/evenements[/]', EventController::class.':addEvent')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
 
 
 //* Déclenche le traitement par le framework de la requête courante et la compare dans l'ordre de chacune des routes

@@ -156,25 +156,25 @@ class UserController {
   }
 
 
-  public function createUser(Request $req, Response $res,array $args): Response {
+  public function createUser(Request $rq, Response $rs,array $args): Response {
 
-       if (!$req->getAttribute('has_errors')) {
-          $json_data = $req->getParsedBody();
+       if (!$rq->getAttribute('has_errors')) {
+          $json_data = $rq->getParsedBody();
 
             if(!isset($json_data['nom'])){
-              return Writer::json_error($res, 400, "Missing data: nom");
+              return Writer::json_error($rs, 400, "Missing data: nom");
             }
 
              if(!isset($json_data['prenom'])){
-              return Writer::json_error($res, 400, "Missing data: prenom");
+              return Writer::json_error($rs, 400, "Missing data: prenom");
             }
 
             if(!isset($json_data['email'])){
-              return Writer::json_error($res, 400, "Missing data: email");
+              return Writer::json_error($rs, 400, "Missing data: email");
             }
 
             if(!isset($json_data['motpasse'])){
-              return Writer::json_error($res, 400, "Missing data: password");
+              return Writer::json_error($rs, 400, "Missing data: password");
             }
 
             try{
@@ -184,11 +184,11 @@ class UserController {
                 $username = $json_data["username"];
                 $email = $json_data["email"];
                 $motpasse = $json_data["motpasse"];
-                $getBody = json_decode($req->getBody());
+                $getBody = json_decode($rq->getBody());
 
                 $token = random_bytes(32);
                 $token = bin2hex($token);
-                //$token = $req->getQueryParam('token', null);
+                //$token = $rq->getQueryParam('token', null);
 
                 $c = new Utilisateur();
 
@@ -203,17 +203,17 @@ class UserController {
                 $c->save();
 
 
-                $uri = $req->getUri();
+                $uri = $rq->getUri();
                 $baseUrl = $uri->getBaseUrl();
 
 
-                return Writer::json_output($res, 201, ['utilisateurs'=>$c->toArray()])
+                return Writer::json_output($rs, 201, ['utilisateurs'=>$c->toArray()])
                   ->withHeader('Location', $baseUrl.$this->c['router']->pathFor('utilisateur', ['id'=>$c->id]));
             }catch(Expeption $e){
-                return Writer::json_error($res, 500, $e->getMessage());
+                return Writer::json_error($rs, 500, $e->getMessage());
             }
         } else {
-            return Writer::json_error($res, 400, $req->getAttribute('errors'));
+            return Writer::json_error($rs, 400, $rq->getAttribute('errors'));
         }
     }
 
@@ -253,7 +253,7 @@ class UserController {
       $token = JWT::encode( ['iss' => 'https://api.udalost.web:10243/login',
           'aud' => 'https://api.udalost.web:10243',
           'lat' => time(),
-          'exp' => time()+(12*30*24*3600),
+          'exp' => time()+3600,
           'cid' => $user->id ],
           $secret, 'HS512'); 
 
@@ -265,5 +265,4 @@ class UserController {
       return Writer::json_output($rs, 200, $data);
       
     }
-
   }
