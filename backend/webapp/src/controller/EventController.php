@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 use udalost\webapp\utils\Writer;
 use udalost\webapp\models\Evenement;
-use udalost\webapp\models\Utilisateur;
 use udalost\webapp\models\Participant;
 
 use \Psr\Http\Message\ResponseInterface as Response;

@@ -13,4 +13,5 @@ class Participant extends Model {
 	public function commentaires() {
     return $this->hasMany('udalost\webapp\models\Commentaire', 'id_participant');
   }
+
 }

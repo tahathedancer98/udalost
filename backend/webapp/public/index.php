@@ -5,6 +5,7 @@ require_once  __DIR__ . '/../src/vendor/autoload.php';
 use udalost\webapp\connection\DataBaseConnection;
 use udalost\webapp\controller\UserController;
 use udalost\webapp\controller\EventController;
+use udalost\webapp\controller\ParticipantController;
 use udalost\webapp\middlewares\Cors;
 use udalost\webapp\middlewares\DataValidation;
 use udalost\webapp\middlewares\JwtToken;
@@ -39,6 +40,10 @@ $app->get('/evenements[/]', EventController::class . ':events')->setName('evenem
 $app->get('/evenements/{id}[/]', EventController::class . ':anEvent')
     ->setName('evenement')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
 
+$app->get('/participants[/]', ParticipantController::class . ':participants')->setName('participants')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
+
+$app->get('/participants/{id}[/]', ParticipantController::class . ':aParticipant')
+    ->setName('participant')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
 
 $app->post('/utilisateurs[/]', UserController::class.':createUser')->setName('newUtilisateur')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
 
