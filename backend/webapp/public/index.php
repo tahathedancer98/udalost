@@ -20,13 +20,18 @@ $api_container = new \Slim\Container(array_merge($api_settings, $api_errors));
 $app = new \Slim\App($api_container);
 
 
-//*Config et Connexion à la BDD
+//Config et Connexion à la BDD
 DataBaseConnection::startEloquent($api_container->settings['db']);
 
+//Utilisateurs
+$app->get('/utilisateurs[/]', UserController::class . ':users')->setName('utilisateurs');  					// Lister tous les utilisateurs
+$app->get('/utilisateurs/{id}[/]', UserController::class . ':aUser')->setName('utilisateur');				// Lister un utilisateur en particularité
+$app->post('/utilisateurs[/]', UserController::class.':createUser')->setName('newUtilisateur');				// S'insrcrire et créer un utilisateur
+$app->post('/login[/]', UserController::class.':loginUser')->setName('loginUtilisateur');					// Se connecter à son compte 
+//$app->put('/utilisateurs/{id}[/]', UserController::class.':editUser')->setName('edtUtilisateur');			// Modifier son compte
+$app->delete('/utilisateurs/{id}[/]', UserController::class.':deleteUser')->setName('suppUtilisateur');		// Supprimer un utilisateur
 
 
-
-// print '<h1>API WEB</h1>';
 
 //* Les objets de type requête
 $app->get('/utilisateurs[/]', UserController::class . ':users')->setName('utilisateurs')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
@@ -55,9 +60,11 @@ $app->post('/evenements[/]', EventController::class.':addEvent')->add(Cors::clas
 $app->put('/utilisateurs/{id}', UserController::class.':editUser')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
 
 $app->put('/evenements/{id}/rejoindre[/]', EventController::class.':joinEvent')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
+//Evenements
 
+$app->delete('/evenements/{id}[/]', EventController::class.':deleteEvent')->setName('suppEvenement')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
 
-//* Déclenche le traitement par le framework de la requête courante et la compare dans l'ordre de chacune des routes
+// Déclenche le traitement par le framework de la requête courante et la compare dans l'ordre de chacune des routes
 try {
   $app->run();
 } catch (Throwable $e) {

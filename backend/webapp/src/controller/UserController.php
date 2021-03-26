@@ -28,8 +28,7 @@ class UserController {
   public function __construct(\Slim\Container $c){
 
     $this->c = $c;
-
-  }
+    }
 
   public function users(Request $rq, Response $rs, array $args) : Response {
     try {
@@ -68,7 +67,7 @@ class UserController {
     catch(ModelNotFoundException $e){
       return Writer::json_error($rs, 404, "user not found");
     }
-  }
+    }
 
   public function aUser(Request $rq, Response $rs, array $args) : Response {
     $id = $args['id'];
@@ -153,8 +152,7 @@ class UserController {
       // ($this->c->get('logger.error'))->error("command $id not found", [404]);
       return Writer::json_error($rs, 404, "user $id not found");
     }
-  }
-
+    }
 
   public function createUser(Request $rq, Response $rs,array $args): Response {
 
@@ -331,4 +329,22 @@ class UserController {
           return $rs;
       }
     }
+
+  public function deleteUser(Request $req, Response $res, array $args) : Response {
+      $id = $args['id'];
+      //$token = $args['token'];
+      try {
+        $user = Utilisateur::where('id','=', $id);/*->where('token', '=', $token);*/
+        $user->delete();
+
+         $data = [
+            'response' => 'success user n°' . $id . ' is deleted.'
+          ];
+
+        return Writer::json_output($res, 200, $data);
+      }catch(Expeption $e){
+      return Writer::json_error($res, 500, $e->getMessage());
+    }
+    return $res->getBody()->write($id . 'deleted');
   }
+}

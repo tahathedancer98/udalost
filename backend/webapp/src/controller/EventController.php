@@ -10,6 +10,7 @@ use udalost\webapp\utils\Writer;
 use udalost\webapp\models\Evenement;
 use udalost\webapp\models\Participant;
 
+
 use \Psr\Http\Message\ResponseInterface as Response;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -344,4 +345,22 @@ class EventController {
         //Nous traitons les erreurs
         }
       }
+
+  public function deleteEvent(Request $req, Response $res, array $args) : Response {
+      $id = $args['id'];
+      try {
+        $event = Evenement::where('id','=', $id);
+        $event->delete();
+
+
+         $data = [
+            'response' => 'success event n° ' . $id . ' is deleted.'
+          ];
+
+        return Writer::json_output($res, 200, $data);
+      }catch(Expeption $e){
+      return Writer::json_error($res, 500, $e->getMessage());
+    }
+    return $res->getBody()->write($id . 'deleted');
+  }
 }
