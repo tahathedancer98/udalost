@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 use udalost\webapp\utils\Writer;
 use udalost\webapp\models\Evenement;
+use udalost\webapp\models\Utilisateur;
+use udalost\webapp\models\Participant;
 
 use \Psr\Http\Message\ResponseInterface as Response;
 use \Psr\Http\Message\ServerRequestInterface as Request;
@@ -170,50 +172,6 @@ class EventController {
     }
   }
 
-
-  // public function addEvent(Request $rq, Response $rs, array $args) : Response {
-  //   if($rq->getAttribute('has_errors')){
-  //     return Writer::json_error($rs, 400, $rq->getAttribute('errors'));
-  //   }
-
-  //   $event_data = $rq->getParsedBody();
-
-  //   try {
-
-  //     $c = new Evenement();
-
-  //     $c->id = Uuid::uuid4();
-  //     // $c->nom = filter_var($event_data['nom_client'], FILTER_SANITIZE_STRING);
-  //     // $c->mail = filter_var($event_data['mail_client'], FILTER_SANITIZE_EMAIL);
-  //     // $c->livraison = \Datetime::createFromFormat('d-m-Y H:i',
-  //     //   $event_data['livraison']['date'] . ' ' .
-  //     //   $event_data['livraison']['heure']);
-  //     // $c->status = Evenement::CREATED;
-
-  //     // $c->token = bin2hex(random_bytes(32));
-  //     $c->titre = 'Test pour créer un événement';
-  //     $c->description = 'La description super précise sur le test';
-  //     $c->date = '2100-01-25';
-  //     $c->heure = '22:30:00';
-  //     $c->latitude = '48.039549';
-  //     $c->longitude = '7.418101';
-  //     $c->adresse = '12 rue du Riesling';
-  //     $c->codePostal = '68280';
-  //     $c->ville = 'Sundhoffen';
-  //     $c->pays = 'France';
-  //     $c->type = 0;
-  //     $c->id_utilisateur = '3fe96bf8-8bb3-11eb-8dcd-0242ac130003';
-
-  //     $c->save();
-
-  //     return Writer::json_output($rs, 201, ['evenement'=> $c])
-  //       ->withHeader('Location', $this->c->router->pathFor('evenement', ['id'=> $c->id]));
-
-  //   } catch (\Exception $e) {
-  //     return Writer::json_error($rs, 500, $e->getMessage());
-  //   }
-  // }
-
     public function addEvent(Request $rq, Response $rs,array $args): Response{
       //si le header Autorization existe on va entrer
       if($rq->hasHeader('Authorization')){
@@ -230,7 +188,7 @@ class EventController {
 
               $json_data = $rq->getParsedBody();
   
-              $user = new Client(["base_uri" => $this->c->settings['url_udalost']]);
+              $e = new Client(["base_uri" => $this->c->settings['url_udalost']]);
               $titre = $json_data["titre"];
               $description = $json_data["description"];
               $date = $json_data["date"];
@@ -294,4 +252,97 @@ class EventController {
           return $rs;
       }
   }
+
+  public function joinEvent(Request $rq, Response $rs,array $args): Response {
+        
+        try{
+            $id = $args['id'];
+
+            if($rq->hasHeader('Authorization')){
+              //Prendre les secret du fichier settings
+              $secret = $this->c->settings['secret'];
+
+              //Enregistrer le header Authorization
+              $h = $rq->getHeader('Authorization')[0];
+
+              //Decodage du token
+              $tokenstring= sscanf($h, "Bearer %s")[0];
+              $token;
+
+              $token = JWT::decode($tokenstring, $secret, ['HS512']);
+
+            }
+              // } catch(SignatureInvalidException $se){
+                //Nous traitons les erreurs
+                // $rs = $rs->withStatus(401)
+                // ->withHeader('Content-Type','application/json')->withHeader('WWW-authenticate');
+                // $rs->getBody()->write(
+                //     json_encode(
+                //         array(
+                //             'type' => 'error',
+                //             'error' => 401,
+                //             'message' => 'Token invalide'
+                //         )
+                //     )
+                // );
+                // return $rs;
+              // }
+            
+            // else {
+            //   $rs = $rs->withStatus(401)
+            //       ->withHeader('Content-Type','application/json')->withHeader('WWW-authenticate');
+            //       $rs->getBody()->write(
+            //           json_encode(
+            //               array(
+            //                   'type' => 'error',
+            //                   'error' => 401,
+            //                   'message' => 'No authorization header present'
+            //               )
+            //           )
+            //       );
+            //       return $rs;
+            // }
+
+            $json_data = $rq->getParsedBody();
+
+            $p = new Client(["base_uri" => $this->c->settings['url_udalost']]);
+            $nom = $json_data["nom"];
+            $status = $json_data["status"];
+            $message = $json_data["message"];
+
+
+            $getBody = json_decode($rq->getBody());
+
+            
+            $participant = new Participant();
+            $participant->id_evenement = $id;
+            // L'ID de l'utilisateur qu'on récupère grâce au token
+            if (isset($token)) {
+                $participant->id_utilisateur = $token->cid;
+                $participant->nom = null;
+            }
+            else {
+              $participant->id_utilisateur = null;
+              $participant->nom = (filter_var($nom, FILTER_SANITIZE_STRING));
+            }
+            $participant->status = (filter_var($status, FILTER_SANITIZE_STRING));
+            $participant->message = (filter_var($message, FILTER_SANITIZE_STRING));
+            
+            
+            $participant->save();
+            
+            $uri = $rq->getUri();
+            $baseUrl = $uri->getBaseUrl();
+            
+            return Writer::json_output($rs, 201, ['participants'=>$participant->toArray()])
+                ->withHeader('Location', $baseUrl.$this->c['router']->pathFor('evenement', ['id'=>$id]));
+
+        //Nous traitons les erreurs
+        }catch(ExpiredException $e){
+            $rs = $rs->withStatus(401)->withHeader('Content-Type','application/json');
+            $rs->getBody()->write(json_encode($e));
+            return $rs;
+        //Nous traitons les erreurs
+        }
+      }
 }

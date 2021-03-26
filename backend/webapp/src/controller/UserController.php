@@ -265,4 +265,70 @@ class UserController {
       return Writer::json_output($rs, 200, $data);
       
     }
+
+    public function editUser(Request $rq, Response $rs, array $args) : Response {
+        //si le header Autorization existe on va entrer
+        if($rq->hasHeader('Authorization')){
+          try{
+              //Prendre les secret du fichier settings
+              $secret = $this->c->settings['secret'];
+
+              //Enregistrer le header Authorization
+              $h = $rq->getHeader('Authorization')[0];
+
+              //Decodage du token
+              $tokenstring= sscanf($h, "Bearer %s")[0];
+              $token = JWT::decode($tokenstring, $secret, ['HS512']);
+
+              $json_data = $rq->getParsedBody();
+
+              $u = new Client(["base_uri" => $this->c->settings['url_udalost']]);
+              $nom = $json_data["nom"];
+              $prenom = $json_data["prenom"];
+              $username = $json_data["username"];
+              $email = $json_data["email"];
+              $motpasse = $json_data["motpasse"];
+
+              $getBody = json_decode($rq->getBody());
+              
+              $user = Utilisateur::find($token->cid);
+
+              $user->nom = (filter_var($nom, FILTER_SANITIZE_STRING));
+              $user->prenom = (filter_var($prenom,FILTER_SANITIZE_STRING));
+              $user->username = (filter_var($username,FILTER_SANITIZE_STRING));
+              $user->email = (filter_var($email, FILTER_SANITIZE_EMAIL));
+              $user->motpasse = (password_hash($motpasse,PASSWORD_DEFAULT));
+
+              $user->save();
+              
+              $uri = $rq->getUri();
+              $baseUrl = $uri->getBaseUrl();
+              
+              return Writer::json_output($rs, 201, ['utilisateurs'=>$user->toArray()])
+                  ->withHeader('Location', $baseUrl.$this->c['router']->pathFor('utilisateur', ['id'=>$user->id]));
+
+          //Nous traitons les erreurs
+          }catch(ExpiredException $e){
+              $rs = $rs->withStatus(401)->withHeader('Content-Type','application/json');
+              $rs->getBody()->write(json_encode($e));
+              return $rs;
+          //Nous traitons les erreurs
+          }
+      
+      }else{
+          //Nous traitons les erreurs
+          $rs = $rs->withStatus(401)
+          ->withHeader('Content-Type','application/json')->withHeader('WWW-authenticate');
+          $rs->getBody()->write(
+              json_encode(
+                  array(
+                      'type' => 'error',
+                      'error' => 401,
+                      'message' => 'No authorization header present'
+                  )
+              )
+          );
+          return $rs;
+      }
+    }
   }

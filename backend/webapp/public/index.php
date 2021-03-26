@@ -47,6 +47,11 @@ $app->post('/login[/]', UserController::class.':loginUser')->setName('loginUtili
 $app->post('/evenements[/]', EventController::class.':addEvent')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
 
 
+$app->put('/utilisateurs/{id}', UserController::class.':editUser')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
+
+$app->put('/evenements/{id}/rejoindre[/]', EventController::class.':joinEvent')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
+
+
 //* Déclenche le traitement par le framework de la requête courante et la compare dans l'ordre de chacune des routes
 try {
   $app->run();
