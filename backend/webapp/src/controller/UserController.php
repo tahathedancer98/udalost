@@ -101,6 +101,11 @@ class UserController {
           ]
         ];
       }
+
+      $evenementsCrees = [
+        'count' => count($eventsCreated_array),
+        $eventsCreated_array,
+      ];
       
       //* Mise en forme de tous les événements de l'utilisateur
       $events_array = [];
@@ -125,6 +130,11 @@ class UserController {
           ]
         ];
       }
+
+      $evenements = [
+        'count' => count($events_array),
+        $events_array,
+      ];
       
       //* Mise en forme de tous les attributs de la ressource
       $user_array[] = [
@@ -135,8 +145,8 @@ class UserController {
           "username" => $user->username,
           "token" => $user->token,
           "derniere_connexion" => date('Y-m-d', strtotime($user->derniere_connexion)),
-          "evenements" => $events_array,
-          "evenementsCrees" => $eventsCreated_array,
+          "evenements" => $evenements,
+          "evenementsCrees" => $evenementsCrees,
         ];
 
       //* Mise en forme de la ressource
@@ -248,7 +258,7 @@ class UserController {
       $secret = $this->c->settings['secret'];
       
       $data[] = ["utilisateur" => $secret];
-      $token = JWT::encode( ['iss' => 'https://api.udalost.web:10243/login',
+      $token = JWT::encode( ['iss' => 'https://api.udalost.web:10243/connexion',
           'aud' => 'https://api.udalost.web:10243',
           'lat' => time(),
           'exp' => time()+3600,

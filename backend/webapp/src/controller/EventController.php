@@ -125,6 +125,11 @@ class EventController {
         ];
       }
 
+      $participants = [
+        'count' => count($participants_array),
+        $participants_array,
+      ];
+
       //* Mise en forme de tous les participants (non inscrits)
       $participantsNotRegistered = [];
       foreach ($event->participantsNonInscrits as $participantNonInscrit) {
@@ -137,6 +142,13 @@ class EventController {
           ],
         ];
       }
+
+      $participantsNonInscrits = [
+        'count' => count($participantsNotRegistered),
+        $participantsNotRegistered,
+      ];
+
+      
       
       //* Mise en forme de tous les attributs de la ressource
       $event_array[] = [
@@ -153,8 +165,8 @@ class EventController {
           "pays" => $event->pays,
           "type" => $event->type,
           "createur" => $creators_array,
-          "participants" => $participants_array,
-          "participantsNonInscrits" => $participantsNotRegistered,
+          "participants" => $participants,
+          "participantsNonInscrits" => $participantsNonInscrits,
         ];
 
       //* Mise en forme de la ressource
@@ -363,4 +375,84 @@ class EventController {
     }
     return $res->getBody()->write($id . 'deleted');
   }
+      public function editEvent(Request $rq, Response $rs, array $args) : Response {
+        $id = $args['id'];
+        //si le header Autorization existe on va entrer
+        if($rq->hasHeader('Authorization')){
+          try{
+              //Prendre les secret du fichier settings
+              $secret = $this->c->settings['secret'];
+
+              //Enregistrer le header Authorization
+              $h = $rq->getHeader('Authorization')[0];
+
+              //Decodage du token
+              $tokenstring= sscanf($h, "Bearer %s")[0];
+              $token = JWT::decode($tokenstring, $secret, ['HS512']);
+
+              $json_data = $rq->getParsedBody();
+
+              $e = new Client(["base_uri" => $this->c->settings['url_udalost']]);
+              $titre = $json_data["titre"];
+              $description = $json_data["description"];
+              $date = $json_data["date"];
+              $heure = $json_data["heure"];
+              $latitude = $json_data["latitude"];
+              $longitude = $json_data["longitude"];
+              $adresse = $json_data["adresse"];
+              $codePostal = $json_data["codePostal"];
+              $ville = $json_data["ville"];
+              $pays = $json_data["pays"];
+              $type = $json_data["type"];
+
+              $getBody = json_decode($rq->getBody());
+              
+              $event = Evenement::find($id);
+
+              $event->titre = (filter_var($titre, FILTER_SANITIZE_STRING));
+              $event->description = (filter_var($description, FILTER_SANITIZE_STRING));
+              $event->date = (filter_var($date, FILTER_SANITIZE_STRING));
+              $event->heure = (filter_var($heure, FILTER_SANITIZE_STRING));
+              $event->latitude = (filter_var($latitude, FILTER_SANITIZE_STRING));
+              $event->longitude = (filter_var($longitude, FILTER_SANITIZE_STRING));
+              $event->adresse = (filter_var($adresse, FILTER_SANITIZE_STRING));
+              $event->codePostal = (filter_var($codePostal, FILTER_SANITIZE_NUMBER_INT));
+              $event->ville = (filter_var($ville, FILTER_SANITIZE_STRING));
+              $event->pays = (filter_var($pays, FILTER_SANITIZE_STRING));
+              $event->type = (filter_var($type, FILTER_SANITIZE_NUMBER_INT));
+              // L'ID de l'utilisateur qu'on récupère grâce au token
+              $event->id_utilisateur = $token->cid;
+
+              $event->save();
+              
+              $uri = $rq->getUri();
+              $baseUrl = $uri->getBaseUrl();
+              
+              return Writer::json_output($rs, 201, ['evenements'=>$event->toArray()])
+                  ->withHeader('Location', $baseUrl.$this->c['router']->pathFor('evenement', ['id'=>$event->id]));
+
+          //Nous traitons les erreurs
+          }catch(ExpiredException $e){
+              $rs = $rs->withStatus(401)->withHeader('Content-Type','application/json');
+              $rs->getBody()->write(json_encode($e));
+              return $rs;
+          //Nous traitons les erreurs
+          }
+      
+      }else{
+          //Nous traitons les erreurs
+          $rs = $rs->withStatus(401)
+          ->withHeader('Content-Type','application/json')->withHeader('WWW-authenticate');
+          $rs->getBody()->write(
+              json_encode(
+                  array(
+                      'type' => 'error',
+                      'error' => 401,
+                      'message' => 'No authorization header present'
+                  )
+              )
+          );
+          return $rs;
+      }
+    }
 }

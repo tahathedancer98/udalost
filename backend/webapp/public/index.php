@@ -52,12 +52,15 @@ $app->get('/participants/{id}[/]', ParticipantController::class . ':aParticipant
 
 $app->post('/utilisateurs[/]', UserController::class.':createUser')->setName('newUtilisateur')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
 
-$app->post('/login[/]', UserController::class.':loginUser')->setName('loginUtilisateur')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
+$app->post('/connexion[/]', UserController::class.':loginUser')->setName('loginUtilisateur')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
 
 $app->post('/evenements[/]', EventController::class.':addEvent')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
 
 
 $app->put('/utilisateurs/{id}', UserController::class.':editUser')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
+
+$app->put('/evenements/{id}', EventController::class.':editEvent')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
+
 
 $app->put('/evenements/{id}/rejoindre[/]', EventController::class.':joinEvent')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
 //Evenements
