@@ -347,9 +347,9 @@ class UserController {
         $user = Utilisateur::where('id','=', $id);/*->where('token', '=', $token);*/
         $user->delete();
 
-         $data = [
+        $data = [
             'response' => 'success user n°' . $id . ' is deleted.'
-          ];
+        ];
 
         return Writer::json_output($res, 200, $data);
       }catch(Expeption $e){
