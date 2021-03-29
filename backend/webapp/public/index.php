@@ -52,6 +52,8 @@ $app->post('/evenements[/]', EventController::class.':addEvent')->setName('creer
 $app->put('/evenements/{id}', EventController::class.':editEvent')->setName('modifierEvenement')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
 // Rejoindre un événement en tant que participant
 $app->put('/evenements/{id}/rejoindre[/]', EventController::class.':joinEvent')->setName('rejoindreEvenement')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
+// Laisser un commentaire sur l'événement
+$app->post('/evenements/{id}/comment[/]', EventController::class.':addComment')->setName('ajouterCommentaire')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
 // Supprimer un événement
 $app->delete('/evenements/{id}[/]', EventController::class.':deleteEvent')->setName('supprimerEvenement')->setName('suppEvenement')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
 

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use udalost\webapp\utils\Writer;
 use udalost\webapp\models\Evenement;
 use udalost\webapp\models\Participant;
+use udalost\webapp\models\Commentaire;
 
 
 use \Psr\Http\Message\ResponseInterface as Response;
@@ -358,7 +359,7 @@ class EventController {
         }
       }
 
-  public function deleteEvent(Request $req, Response $res, array $args) : Response {
+  public function deleteEvent(Request $rq, Response $rs, array $args) : Response {
       $id = $args['id'];
       try {
         $event = Evenement::where('id','=', $id);
@@ -369,11 +370,11 @@ class EventController {
             'response' => 'success event n° ' . $id . ' is deleted.'
         ];
 
-        return Writer::json_output($res, 200, $data);
+        return Writer::json_output($rs, 200, $data);
       }catch(Expeption $e){
-      return Writer::json_error($res, 500, $e->getMessage());
+      return Writer::json_error($rs, 500, $e->getMessage());
     }
-    return $res->getBody()->write($id . 'deleted');
+    return $rs->getBody()->write($id . 'deleted');
   }
   
   public function editEvent(Request $rq, Response $rs, array $args) : Response {
@@ -454,6 +455,89 @@ class EventController {
             )
         );
         return $rs;
+    }
+  }
+
+  public function addComment(Request $rq, Response $rs, array $args) : Response {
+    try{
+        $id = $args['id'];
+
+        // if($rq->hasHeader('Authorization')){
+        //   //Prendre les secret du fichier settings
+        //   $secret = $this->c->settings['secret'];
+
+        //   //Enregistrer le header Authorization
+        //   $h = $rq->getHeader('Authorization')[0];
+
+        //   //Decodage du token
+        //   $tokenstring= sscanf($h, "Bearer %s")[0];
+        //   $token;
+
+        //   $token = JWT::decode($tokenstring, $secret, ['HS512']);
+
+        // }
+          // } catch(SignatureInvalidException $se){
+            //Nous traitons les erreurs
+            // $rs = $rs->withStatus(401)
+            // ->withHeader('Content-Type','application/json')->withHeader('WWW-authenticate');
+            // $rs->getBody()->write(
+            //     json_encode(
+            //         array(
+            //             'type' => 'error',
+            //             'error' => 401,
+            //             'message' => 'Token invalide'
+            //         )
+            //     )
+            // );
+            // return $rs;
+          // }
+        
+        // else {
+        //   $rs = $rs->withStatus(401)
+        //       ->withHeader('Content-Type','application/json')->withHeader('WWW-authenticate');
+        //       $rs->getBody()->write(
+        //           json_encode(
+        //               array(
+        //                   'type' => 'error',
+        //                   'error' => 401,
+        //                   'message' => 'No authorization header present'
+        //               )
+        //           )
+        //       );
+        //       return $rs;
+        // }
+
+        $json_data = $rq->getParsedBody();
+
+        $c = new Client(["base_uri" => $this->c->settings['url_udalost']]);
+        $id_participant = $json_data["id_participant"];
+        $texte = $json_data["texte"];
+        $lien = $json_data["lien"];
+
+
+        $getBody = json_decode($rq->getBody());
+
+        
+        $commentaire = new Commentaire();
+        $commentaire->id = Uuid::uuid4();
+        $commentaire->id_participant = (filter_var($id_participant, FILTER_SANITIZE_NUMBER_INT));
+        $commentaire->texte = (filter_var($texte, FILTER_SANITIZE_STRING));
+        $commentaire->lien = (filter_var($lien, FILTER_SANITIZE_URL));
+        
+        $commentaire->save();
+        
+        $uri = $rq->getUri();
+        $baseUrl = $uri->getBaseUrl();
+        
+        return Writer::json_output($rs, 201, ['commentaires'=>$commentaire->toArray()])
+            ->withHeader('Location', $baseUrl.$this->c['router']->pathFor('evenement', ['id'=>$id]));
+
+    //Nous traitons les erreurs
+    }catch(ExpiredException $e){
+        $rs = $rs->withStatus(401)->withHeader('Content-Type','application/json');
+        $rs->getBody()->write(json_encode($e));
+        return $rs;
+    //Nous traitons les erreurs
     }
   }
 }

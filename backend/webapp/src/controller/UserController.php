@@ -48,7 +48,7 @@ class UserController {
             "token" => $user->token,
             "derniere_connexion" => date('Y-m-d', strtotime($user->derniere_connexion)),
             "links"=>[
-              "self" => ['href' => $this->c->router->pathFor('utilisateur', ['id'=> $user->id], ['token' => $user->token])],
+              "self" => ['href' => $this->c->router->pathFor('utilisateur', ['id'=> $user->id])],
             ],
           ],
         ];
@@ -74,7 +74,8 @@ class UserController {
     $token = $rq->getQueryParam('token', null);
 
     try {
-      $user = Utilisateur::select(['id', 'nom', 'prenom', 'email', 'username', 'token', 'derniere_connexion'])->with('evenements')->where('id', '=', $id)->where('token', '=', $token)->firstOrFail();
+      // $user = Utilisateur::select(['id', 'nom', 'prenom', 'email', 'username', 'token', 'derniere_connexion'])->with('evenements')->where('id', '=', $id)->where('token', '=', $token)->firstOrFail();
+      $user = Utilisateur::select(['id', 'nom', 'prenom', 'email', 'username', 'token', 'derniere_connexion'])->with('evenements')->where('id', '=', $id)->firstOrFail();
 
       $evenementsCrees = $user->evenementsCrees()->select(['id', 'titre', 'description', 'date', 'heure', 'latitude', 'longitude', 'adresse', 'codePostal', 'ville', 'pays', 'type'])->get();
 
@@ -166,14 +167,14 @@ class UserController {
 
   public function createUser(Request $rq, Response $rs,array $args): Response {
 
-       if (!$rq->getAttribute('has_errors')) {
+      if (!$rq->getAttribute('has_errors')) {
           $json_data = $rq->getParsedBody();
 
             if(!isset($json_data['nom'])){
               return Writer::json_error($rs, 400, "Missing data: nom");
             }
 
-             if(!isset($json_data['prenom'])){
+            if(!isset($json_data['prenom'])){
               return Writer::json_error($rs, 400, "Missing data: prenom");
             }
 
@@ -239,7 +240,7 @@ class UserController {
   
   
       try {
-          $user = Utilisateur::select('id', 'email', 'motpasse')
+          $user = Utilisateur::select()
               ->where('email', '=', $email)
               ->firstOrFail();
   
@@ -267,10 +268,17 @@ class UserController {
 
       $data = [
       'utilisateur' => $user,
-      'jwt-token' => $token
+      'token' => $token
       ];
+
+      date_default_timezone_set('Europe/Paris');
+      $userDatetime = Utilisateur::find($user->id);
+      $userDatetime->derniere_connexion = date('Y-m-d H:i:s');
+
+      $userDatetime->save();
   
       return Writer::json_output($rs, 200, $data);
+      
       
     }
 
@@ -340,7 +348,7 @@ class UserController {
       }
     }
 
-  public function deleteUser(Request $req, Response $res, array $args) : Response {
+  public function deleteUser(Request $rq, Response $rs, array $args) : Response {
       $id = $args['id'];
       //$token = $args['token'];
       try {
@@ -351,10 +359,10 @@ class UserController {
             'response' => 'success user n°' . $id . ' is deleted.'
         ];
 
-        return Writer::json_output($res, 200, $data);
+        return Writer::json_output($rs, 200, $data);
       }catch(Expeption $e){
-      return Writer::json_error($res, 500, $e->getMessage());
+      return Writer::json_error($rs, 500, $e->getMessage());
     }
-    return $res->getBody()->write($id . 'deleted');
+    return $rs->getBody()->write($id . 'deleted');
   }
 }

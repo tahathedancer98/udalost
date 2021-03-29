@@ -38,6 +38,7 @@ CREATE TABLE participant
     nom					VARCHAR(24) NULL,
     status				TINYINT DEFAULT 0, -- 0 - En attente | 1 - Refusé | 2 - Accepté
     message	 			TEXT NULL,
+    constraint participantPerEvenement unique (id_evenement,id_utilisateur),
     foreign key (id_utilisateur) references utilisateur(id) ON UPDATE CASCADE ON DELETE CASCADE,
     foreign key (id_evenement) references evenement(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
@@ -48,6 +49,8 @@ CREATE TABLE commentaire
     id_participant		INT NOT NULL,
     texte				TEXT NULL,
     lien				TEXT NULL,
+    created_at			DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at			DATETIME,
     foreign key (id_participant) references participant(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
  
