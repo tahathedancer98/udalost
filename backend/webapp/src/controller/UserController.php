@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 use udalost\webapp\utils\Writer;
 use udalost\webapp\models\Utilisateur;
+use udalost\webapp\models\Participant;
+use udalost\webapp\models\Commentaire;
 
 use \Psr\Http\Message\ResponseInterface as Response;
 use \Psr\Http\Message\ServerRequestInterface as Request;
@@ -71,7 +73,7 @@ class UserController {
 
   public function aUser(Request $rq, Response $rs, array $args) : Response {
     $id = $args['id'];
-    $token = $rq->getQueryParam('token', null);
+    // $token = $rq->getQueryParam('token', null);
 
     try {
       // $user = Utilisateur::select(['id', 'nom', 'prenom', 'email', 'username', 'token', 'derniere_connexion'])->with('evenements')->where('id', '=', $id)->where('token', '=', $token)->firstOrFail();
@@ -111,6 +113,10 @@ class UserController {
       //* Mise en forme de tous les événements de l'utilisateur
       $events_array = [];
       foreach ($user->evenements as $event) {
+        $participant = $event->participants()->where('id_utilisateur', '=', $user->id)->firstOrFail();
+        $participantValues = Participant::where('id', '=', $participant->pivot->id)->firstOrFail();
+        $commentaires = $participantValues->commentaires()->get();
+
         $events_array[] = [
           "evenement"=>[
             "id" => $event->id,
@@ -125,6 +131,7 @@ class UserController {
             "ville" => $event->ville,
             "pays" => $event->pays,
             "type" => $event->type,
+            "commentaires" => $commentaires,
             "links"=>[
               "self" => ['href' => $this->c->router->pathFor('evenement', ['id'=> $event->id])],
             ],
@@ -348,21 +355,21 @@ class UserController {
       }
     }
 
-  public function deleteUser(Request $rq, Response $rs, array $args) : Response {
-      $id = $args['id'];
-      //$token = $args['token'];
-      try {
-        $user = Utilisateur::where('id','=', $id);/*->where('token', '=', $token);*/
-        $user->delete();
+    public function deleteUser(Request $rq, Response $rs, array $args) : Response {
+        $id = $args['id'];
+        //$token = $args['token'];
+        try {
+          $user = Utilisateur::where('id','=', $id);/*->where('token', '=', $token);*/
+          $user->delete();
 
-        $data = [
-            'response' => 'success user n°' . $id . ' is deleted.'
-        ];
+          $data = [
+              'response' => 'success user n°' . $id . ' is deleted.'
+          ];
 
-        return Writer::json_output($rs, 200, $data);
-      }catch(Expeption $e){
-      return Writer::json_error($rs, 500, $e->getMessage());
+          return Writer::json_output($rs, 200, $data);
+        }catch(Expeption $e){
+        return Writer::json_error($rs, 500, $e->getMessage());
+      }
+      return $rs->getBody()->write($id . 'deleted');
     }
-    return $rs->getBody()->write($id . 'deleted');
-  }
 }
