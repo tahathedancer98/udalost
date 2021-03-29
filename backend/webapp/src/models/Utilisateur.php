@@ -22,6 +22,6 @@ class Utilisateur extends Model {
 	           						'participant', // Table Pivot
 	           						'id_utilisateur', // Foreign Key cible de la table pivot
 	        						'id_evenement') //Foreign Key assoc 
-					->withPivot(['id','nom','status','message','id_evenement','id_utilisateur']);
+					->withPivot(udalost\webapp\models\Participant);
 	}
 } 

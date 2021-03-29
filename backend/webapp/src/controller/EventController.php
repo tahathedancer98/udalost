@@ -87,6 +87,8 @@ class EventController {
       $createur = $event->createur()->select(['id', 'nom', 'prenom', 'email', 'username', 'token', 'derniere_connexion'])->get();
       $participantsNonInscrits = $event->participantsNonInscrits()->select(['id', 'nom', 'status', 'message'])->get();
 
+      
+
       //* Mise en forme du créateur
       $creators_array = [];
       foreach ($createur as $createur) {
@@ -107,6 +109,9 @@ class EventController {
       //* Mise en forme de tous les participants (inscrits)
       $participants_array = [];
       foreach ($event->participants as $participant) {
+        $participantValues = Participant::where('id', '=', $participant->pivot->id)->firstOrFail();
+        $commentaires = $participantValues->commentaires()->get();
+
         $participants_array[] = [
           "participant"=>[
             "id_utilisateur" => $participant->pivot->id_utilisateur,
@@ -119,6 +124,7 @@ class EventController {
             // "nom" => $participant->pivot->nom,
             "status" => $participant->pivot->status,
             "message" => $participant->pivot->message,
+            "commentaires" => $commentaires,
             "links"=>[
               "self" => ['href' => $this->c->router->pathFor('utilisateur', ['id'=> $participant->id], ['token' => $participant->token])],
             ],
@@ -134,12 +140,16 @@ class EventController {
       //* Mise en forme de tous les participants (non inscrits)
       $participantsNotRegistered = [];
       foreach ($event->participantsNonInscrits as $participantNonInscrit) {
+        $participantValues = Participant::where('id', '=', $participantNonInscrit->id)->firstOrFail();
+        $commentaires = $participantValues->commentaires()->get();
+
         $participantsNotRegistered[] = [
           "participantNonInscrit"=>[
             "id" => $participantNonInscrit->id,
             "nom" => $participantNonInscrit->nom,
             "status" => $participantNonInscrit->status,
             "message" => $participantNonInscrit->message,
+            "commentaires" => $commentaires,
           ],
         ];
       }
@@ -461,51 +471,6 @@ class EventController {
   public function addComment(Request $rq, Response $rs, array $args) : Response {
     try{
         $id = $args['id'];
-
-        // if($rq->hasHeader('Authorization')){
-        //   //Prendre les secret du fichier settings
-        //   $secret = $this->c->settings['secret'];
-
-        //   //Enregistrer le header Authorization
-        //   $h = $rq->getHeader('Authorization')[0];
-
-        //   //Decodage du token
-        //   $tokenstring= sscanf($h, "Bearer %s")[0];
-        //   $token;
-
-        //   $token = JWT::decode($tokenstring, $secret, ['HS512']);
-
-        // }
-          // } catch(SignatureInvalidException $se){
-            //Nous traitons les erreurs
-            // $rs = $rs->withStatus(401)
-            // ->withHeader('Content-Type','application/json')->withHeader('WWW-authenticate');
-            // $rs->getBody()->write(
-            //     json_encode(
-            //         array(
-            //             'type' => 'error',
-            //             'error' => 401,
-            //             'message' => 'Token invalide'
-            //         )
-            //     )
-            // );
-            // return $rs;
-          // }
-        
-        // else {
-        //   $rs = $rs->withStatus(401)
-        //       ->withHeader('Content-Type','application/json')->withHeader('WWW-authenticate');
-        //       $rs->getBody()->write(
-        //           json_encode(
-        //               array(
-        //                   'type' => 'error',
-        //                   'error' => 401,
-        //                   'message' => 'No authorization header present'
-        //               )
-        //           )
-        //       );
-        //       return $rs;
-        // }
 
         $json_data = $rq->getParsedBody();
 
