@@ -145,7 +145,7 @@ export default {
     creerCompte() {
       if (this.motpasse == this.motpassev) {
         axios
-          .post("utilisateurs", {
+          .post("http://localhost:8080/utilisateurs", {
             username: this.username,
             nom: this.nom,
             prenom: this.prenom,

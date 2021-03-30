@@ -73,116 +73,36 @@
         </div>
       </div>
       
-      <div
-        class="ui link cards stackable five column grid"
-        id="cardsEvenement"
-      >
-        <a
-          href="#visualiserEvenement-modal"
-          class="card column"
-          id="cardDiv"
-          v-for="(ev, i) in listeEvenements"
-        > 
-         <div id="iconB">
-        <a><i class="large red trash alternate icon"></i></a>
-        </div>
-          <div class="image" id="imageCard">
-            <img src="../../assets/images/iconCalendar.png" />
+      <div class="ui link cards stackable five column grid" id="cardsEvenement">
+        <a href="#visualiserEvenement-modal" class="card column"id="cardDiv" v-for="(ev, i) in this.listeEvenements">
+          <div style="color:black;">
+            <div id="iconB">
+            <a>
+              <i class="large red trash alternate icon" @click="suppEvenement(ev.id)"></i>
+            </a>
           </div>
-          <div class="content">
-            <div class="header">{{ev.titre}}</div>
-          </div>
-          <div class="extra content" id="content">
-            <span class="right floated" id="date">
-              {{ev.date}}
-            </span>
-            <span class="right floated" id="heure">
-              {{ev.heure}}
-            </span>
+            <div class="image" id="imageCard">
+              <img src="../../assets/images/iconCalendar.png" />
+            </div>
+            <div class="content">
+              <div class="header">{{ ev.titre }}</div>
+              <div class="meta">
+                <a>{{ ev.adresse }} {{ ev.codePostal }} {{ ev.ville }} {{ ev.pays }}
+                </a>
+              </div>
+              <div class="description">
+                {{ ev.description }}
+              </div>
+            </div>
+            <div class="extra content" id="content">
+              <span class="right floated" id="date">
+                Date : {{ ev.date }} {{ ev.heure }}
+              </span>
+            </div>
           </div>
         </a>
       </div>
   </div>
-
-   <!-- <div id="visualiserEvenement-modal" class="modal">
-      <div class="modal__contentModal">
-        <div class="form">
-          <div class="title">
-            <span>ÉVENEMENT "RENDEZ-VOUS STAGES"</span>
-          </div>
-
-          <form class="ui form">
-            <div
-              class="ui small basic icon buttons column ui stackable one column grid"
-              style="margin:0px !important; float:right; width:15%; padding:0px !important;"
-              id="iconsModal"
-            >
-              <a class="ui button column">
-                <i class="large red trash alternate icon"></i>
-                Supprimer
-              </a>
-            </div>
-            <div class="field">
-              <div class="field">
-                <label><i class="quote left icon"></i>Titre</label>
-                <input type="text" name="" readonly="readonly">
-              </div>
-            </div>
-
-            <div class="field">
-              <div class="field">
-                <label><i class="align justify icon"></i>Description</label>
-                <textarea rows="2" readonly="readonly"></textarea>
-              </div>
-            </div>
-
-            <div class="field">
-              <div class="field">
-                <label><i class="tags icon"></i>Type d'évenement</label>
-                <input type="text" name="" readonly="readonly">
-              </div>
-            </div>
-
-            <div class="field">
-              <div class="fields">
-                <div class="twelve wide field">
-                  <label><i class="calendar alternate icon"></i>Date</label>
-                  <input type="date" readonly="readonly"/>
-                </div>
-                <div class="four wide field">
-                  <label><i class="clock icon"></i>Heure</label>
-                  <input type="time" name="" readonly="readonly"/>
-                </div>
-              </div>
-            </div>
-
-            <div class="field">
-              <div class="field">
-                <label><i class="map marker alternate icon"></i>Adresse</label>
-                <input type="text" readonly="readonly"/>
-              </div>
-            </div>
-
-            <div class="three fields">
-              <div class="field">
-                <label><i class="address book icon"></i>Code postal</label>
-                <input type="text" name="" readonly="readonly"/>
-              </div>
-              <div class="field">
-                <label><i class="building icon"></i>Ville</label>
-                <input type="text" name="" readonly="readonly"/>
-              </div>
-              <div class="field">
-                <label><i class="flag icon"></i>Pays</label>
-                <input type="text" name="" readonly="readonly"/>
-              </div>
-            </div>
-          </form>
-        </div>
-        <a href="#" class="modal__close">&times;</a>
-      </div>
-      <div id="popup-overlay"></div>
-    </div>-->
 
     <div id="copyright" class="container">
       <p>
@@ -202,64 +122,106 @@ export default {
     };
   },
 
-  mounted() {
-      
+  mounted() { 
    this.afficherEvenement();
   },
 
   methods: {
     afficherEvenement() {
-      const data = new URLSearchParams();
-      data.append("grant_type", "client_credentials");
-
-     /* axios
-      .get('https://api.coindesk.com/v1/bpi/currentprice.json')
-      .then(response => (this.info = response))*/
-      axios({
+      api({
         url: `http://localhost:8080/evenements/`,
         method: "GET",
-        withCredentials: true
       })
         .then(
           (response) => {
-            for(var i=0; i < response.data.count; i++){ 
-              this.listeEvenements[i] = response.data.evenements[i].evenement; 
-              console.log(response.data.evenements[i].evenement);
-              console.log('next');
-            };
-            /*while(i < response.data.evenements.length){
-              
-            }*/
-            // for(var i=0; i < response.data.evenements[1].length; i++){ 
-            //   
-            //     console.log(this.listeEvenements);*8/
-             //console.log(response.data.evenements);
-          /*if(response.data.evenements.length > 0){
-             /* console.log('1----'+this.listeEvenements);
-              console.log("Il y a des évenements");
-              response.data.utilisateur[0].evenementsCrees[0][0].evenementCree
-              this.listeEvenements = response.data.utilisateur[0].evenementsCrees[0];*/
-             
-             
-            //} 
-            /*else{
+            this.listeEvenements = [];
+            if (response.data.evenements.length > 0) {
+              // console.log(response.data.evenements[0].evenement);
+              console.log(response.data.evenements.length);
+              for (var i = 0;i < response.data.evenements.length;i++) {
+                this.listeEvenements[i] = response.data.evenements[i].evenement;
+              }
+              console.log(this.listeEvenements);
+            } else {
               console.log("Il y a pas des évenements");
               this.listeEvenements = [];
-              document.getElementById('messageVideE').style.display = "block";
+              document.getElementById("messageVideE").style.display = "block";
             }
-
           },
           function(err) {
             //throw new Error("end of pagination");
             console.log("error");
-            }*/
           }
         )
         .catch((error) => {
           alert("Error :" + error);
         });
-    },
 
+      //AVANT
+
+    //   const data = new URLSearchParams();
+    //   data.append("grant_type", "client_credentials");
+
+    //  /* axios
+    //   .get('https://api.coindesk.com/v1/bpi/currentprice.json')
+    //   .then(response => (this.info = response))*/
+    //   axios({
+    //     url: `http://localhost:8080/evenements/`,
+    //     method: "GET",
+    //     withCredentials: true
+    //   })
+    //     .then(
+    //       (response) => {
+    //         for(var i=0; i < response.data.count; i++){ 
+    //           console.log('next');
+    //           this.listeEvenements[i] = response.data.evenements[i].evenement; 
+    //           console.log(response.data.evenements[i].evenement);
+              
+    //         };
+    //         /*while(i < response.data.evenements.length){
+              
+    //         }*/
+    //         // for(var i=0; i < response.data.evenements[1].length; i++){ 
+    //         //   
+    //         //     console.log(this.listeEvenements);*8/
+    //          //console.log(response.data.evenements);
+    //       /*if(response.data.evenements.length > 0){
+    //          /* console.log('1----'+this.listeEvenements);
+    //           console.log("Il y a des évenements");
+    //           response.data.utilisateur[0].evenementsCrees[0][0].evenementCree
+    //           this.listeEvenements = response.data.utilisateur[0].evenementsCrees[0];*/
+             
+             
+    //         //} 
+    //         /*else{
+    //           console.log("Il y a pas des évenements");
+    //           this.listeEvenements = [];
+    //           document.getElementById('messageVideE').style.display = "block";
+    //         }
+
+    //       },
+    //       function(err) {
+    //         //throw new Error("end of pagination");
+    //         console.log("error");
+    //         }*/
+    //       }
+    //     )
+    //     .catch((error) => {
+    //       alert("Error :" + error);
+    //     });
+    },
+    suppEvenement(id) {
+      api
+        .delete("http://localhost:8080/evenements/" + id)
+        .then((response) => {
+          console.log("L'évenement est bien supprimé");
+          location.reload();
+          // this.$router.push("/gestionEvenement");
+        })
+        .catch((error) => {
+          console.log("Error ========>", error);
+        });
+    },
     seDeconnecter() {
       this.$router.push("/");
     },
@@ -896,5 +858,9 @@ $transition: 0.3s ease-out all;
         border: none;
         color: #484877ff;
     }
+}
+#imageDelete{
+  height:40px;
+  width:40px;
 }
 </style>

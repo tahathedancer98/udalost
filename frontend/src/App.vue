@@ -8,12 +8,12 @@ import axios from "axios";
 
 export default {
   mounted() {
-    console.log("L'app est demarrée");
-    if (this.$store.state.membre == null) {
-      this.$router.push("/");
-    }else{
-      this.$router.push("/home");
-    }
+    // console.log("L'app est demarrée");
+    // if (this.$store.state.membre == null) {
+    //   this.$router.push("/");
+    // }else{
+    //   this.$router.push("/home");
+    // }
 
     let token = this.$store.state.membre.token;
     if (token) {

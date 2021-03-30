@@ -44,10 +44,7 @@
       </div>
     </div>
 
-    <div
-      class="ui secondary pointing menu ui stackable two column grid"
-      id="submenu"
-    >
+    <div class="ui secondary pointing menu ui stackable two column grid" id="submenu">
       <a class="item column" @click="evenement">
         Événements
       </a>
@@ -60,43 +57,61 @@
         class="ui stackable two column grid"
         style="margin:0px !important; width:100%; padding:0px !important; padding-left:8.2%; padding-right:8.2%; margin-bottom:3%;"
       >
-        <div
-          class="ui search column"
-          style="margin:0px !important; float:right; width:100%; padding:0px !important;"
-        >
+        <div class="ui search column" style="margin:0px !important; float:right; width:100%; padding:0px !important;">
           <div class="ui icon input" id="chercheur">
-            <input
-              class="prompt"
-              type="text"
-              placeholder="Rechercher évenement..."
-            />
-            <i class="search icon"></i>
+            <input class="prompt" type="text" placeholder="Rechercher évenement..."/>
+            <i class="search icon"></i><br/>
           </div>
           <div class="results"></div>
         </div>
       </div>
       <!--TABLE-->
-
-      <div
-        class="ui link cards stackable five column grid"
-        id="cardsEvenement"
-      >
-        <a
-          href="#visualiserEvenement-modal"
-          class="card column"
-          id="cardDiv"
-        >
-        <div id="iconB">
-        <a><i class="large red trash alternate icon"></i></a>
+      <!-- <div class="recherche">
+        <div>
+          <input type="radio" id="rechercheNom" name="recherche" value="nom" checked>
+          <label for="huey">Nom</label>
         </div>
+
+        <div>
+          <input type="radio" id="rechercheUsername" name="recherche" value="username">
+          <label for="dewey">Username</label>
+        </div>
+
+        <div>
+          <input type="radio" id="rechercheEmail" name="recherche" value="mail">
+          <label for="louie">Email</label>
+        </div>
+      </div>        
+      <div class="search icon" @click="rechercher()"></div> -->
+
+      <div class="ui link cards stackable five column grid" id="cardsEvenement">
+        <a href="#visualiserEvenement-modal" class="card column" id="cardDiv" v-for="(ev, i) in this.listUtilisateurs">
+          <div id="iconB">
+            <a>
+              <i class="large red trash alternate icon" @click="suppUtilisateur(ev.id)"></i>
+            </a>
+          </div>
           <div class="image" id="imageCard">
             <img src="../../assets/images/users.png" />
           </div>
-          <div class="extra content" id="content">
-            <span class="right floated" id="date">
-              ev.date ev.heure
-            </span>
-          </div>
+          <div class="content">
+              <div class="header">
+                {{ ev.nom }} {{ ev.prenom }}
+              </div>
+              <div class="meta">
+                <a>
+                  {{ ev.username }}
+                </a>
+              </div>
+              <div class="mail">
+                {{ ev.mail }}
+              </div>
+            </div>
+            <div class="extra content" id="content">
+              <span class="right floated" id="date">
+                Dernière connexion : {{ ev.derniere_connexion }}
+              </span>
+            </div>
         </a>
       </div>
       <!--FIN TABLE-->
@@ -164,12 +179,61 @@
 export default {
   name: "Home",
   data() {
-    return {};
+    return {
+      listUtilisateurs : []
+    };
   },
   components: {
   },
-  mounted() {},
+  mounted() {
+    this.afficherUtilisateurs();
+  },
   methods: {
+    afficherUtilisateurs(){
+      api({
+        url: `http://localhost:8080/utilisateurs/`,
+        method: "GET",
+      })
+        .then(
+          (response) => {
+            this.listUtilisateurs = [];
+            if (response.data.utilisateurs.length > 0) {
+              // console.log(response.data.evenements[0].evenement);
+              console.log(response.data.utilisateurs.length);
+              for (var i = 0;i < response.data.utilisateurs.length;i++) {
+                this.listUtilisateurs[i] = response.data.utilisateurs[i].utilisateur;
+              }
+              console.log(this.listUtilisateurs);
+            } else {
+              console.log("Il y a pas d'utilisateur");
+              this.listUtilisateurs = [];
+              document.getElementById("messageVideE").style.display = "block";
+            }
+          },
+          function(err) {
+            //throw new Error("end of pagination");
+            console.log("error");
+          }
+        )
+        .catch((error) => {
+          alert("Error :" + error);
+        });
+    },
+    suppUtilisateur(id){
+      api
+        .delete("http://localhost:8080/utilisateurs/" + id)
+        .then((response) => {
+          console.log("L'utilisateur est bien supprimé");
+          location.reload();
+          // this.$router.push("/gestionEvenement");
+        })
+        .catch((error) => {
+          console.log("Error ========>", error);
+        });
+    },
+    rechercher(){
+
+    },
     seDeconnecter() {
       this.$store.commit('setMembre', '');
       this.$router.push("/");
@@ -808,7 +872,10 @@ $transition: 0.3s ease-out all;
         color: #484877ff;
     }
 }
-
+#imageDelete{
+  height:40px;
+  width:40px;
+}
 .modal__contentModal {
   border-radius: 10px;
   position: relative;

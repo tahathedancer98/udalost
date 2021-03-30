@@ -14,11 +14,15 @@ export default new Vuex.Store({
     admin:false,
     token:false,
     conversations: [],
+    evenements:[],
     membres: []
   },
   mutations: {
     setMembre(state, membre){
       state.membre = membre;
+    },
+    setEvenement(state,evenement){
+      state.membre = evenement;
     },
     setAdmin(state, admin){
       state.admin = admin;

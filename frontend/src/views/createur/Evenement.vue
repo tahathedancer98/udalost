@@ -584,17 +584,9 @@ export default {
               //response.data.utilisateur[0].evenementsCrees[0][0].evenementCree
               this.listeEvenements =
                 response.data.utilisateur[0].evenementsCrees[0];
-              for (
-                var i = 0;
-                i < response.data.utilisateur[0].evenementsCrees[0].length;
-                i++
-              ) {
-                this.listeEvenements[i] =
-                  response.data.utilisateur[0].evenementsCrees[0][
-                    i
-                  ].evenementCree;
-
-               console.log("adentro "+this.listeEvenements);
+              for (var i = 0;i < response.data.utilisateur[0].evenementsCrees[0].length;i++) {
+                this.listeEvenements[i] =response.data.utilisateur[0].evenementsCrees[0][i].evenementCree;
+                console.log("adentro "+this.listeEvenements);
               }
 
                console.log("afuera "+this.listeEvenements);
