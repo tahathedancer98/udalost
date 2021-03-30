@@ -354,13 +354,12 @@ class UserController {
           return $rs;
       }
     }
+  public function deleteUser(Request $rq, Response $rs, array $args) : Response {
+      $id = $args['id'];
 
-    public function deleteUser(Request $rq, Response $rs, array $args) : Response {
-        $id = $args['id'];
-        //$token = $args['token'];
-        try {
-          $user = Utilisateur::where('id','=', $id);/*->where('token', '=', $token);*/
-          $user->delete();
+      try {
+        $user = Utilisateur::where('id','=', $id);
+        $user->delete();
 
           $data = [
               'response' => 'success user n°' . $id . ' is deleted.'

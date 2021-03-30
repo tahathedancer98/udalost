@@ -36,8 +36,7 @@ class EventController {
   public function events(Request $rq, Response $rs, array $args) : Response {
     try {
       $events = Evenement::select('id', 'titre', 'description', 'date', 'heure', 'latitude', 'longitude', 'adresse', 'codePostal', 'ville', 'pays', 'type')->get();
-
-
+      
       //* Mise en forme de tous les utilisateurs dans un tableau
       $users_array = [];
       foreach ($events as $event) {
@@ -471,7 +470,6 @@ class EventController {
   public function addComment(Request $rq, Response $rs, array $args) : Response {
     try{
         $id = $args['id'];
-
         $json_data = $rq->getParsedBody();
 
         $c = new Client(["base_uri" => $this->c->settings['url_udalost']]);
@@ -504,5 +502,22 @@ class EventController {
         return $rs;
     //Nous traitons les erreurs
     }
+  }
+
+  public function deleteComment(Request $rq, Response $rs, array $args) : Response {
+      $id = $args['id'];
+      try {
+        $comment = Commentaire::where('id','=', $id);
+        $comment->delete();
+
+        $data = [
+            'response' => 'success comment n° ' . $id . ' is deleted.'
+        ];
+
+        return Writer::json_output($rs, 200, $data);
+      }catch(Expeption $e){
+      return Writer::json_error($rs, 500, $e->getMessage());
+    }
+    return $rs->getBody()->write($id . 'deleted');
   }
 }

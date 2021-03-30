@@ -56,7 +56,8 @@ $app->put('/evenements/{id}', EventController::class.':editEvent')->setName('mod
 $app->put('/evenements/{id}/rejoindre[/]', EventController::class.':joinEvent')->setName('rejoindreEvenement');
 // Supprimer un événement
 $app->delete('/evenements/{id}[/]', EventController::class.':deleteEvent')->setName('supprimerEvenement');
-
+// Supprimer un commentaire
+$app->delete('/evenements/{id}/commentaire[/]', EventController::class.':deleteComment')->setName('supprimerCommentaire');
 
 // Participants
 // Afficher tous les participants
