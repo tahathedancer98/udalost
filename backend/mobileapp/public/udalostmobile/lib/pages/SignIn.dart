@@ -1,33 +1,8 @@
-import 'dart:convert';
-import 'package:http/http.dart';
 import 'package:flutter/material.dart';
 import 'package:udalost/components/TextFieldContainer.dart';
 import 'package:udalost/pages/SignUp.dart';
 
-class SignIn extends StatefulWidget {
-  @override
-  _SignInState createState() => _SignInState();
-}
-
-class _SignInState extends State<SignIn> {
-
-
-  Future<Response> auth () async {
-    String username = 'michel.dupont@gmail.com';
-    String password = '1234';
-    String basicAuth = 'Basic ' + base64Encode(utf8.encode('$username:$password'));
-    print(basicAuth);
-    Map<String, String> headers = {'content-type':'application/json', 'accept':'application/json', 'Authorization':basicAuth, "Origin": "",};
-    try {
-      var response = await post('https://api.udalost.web:10243/connexion', headers: headers);
-      print(response.body);
-      return response;
-    } catch (e){
-      print(e);
-      return e;
-    }
-  }
-
+class SignIn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,7 +27,7 @@ class _SignInState extends State<SignIn> {
                 TextFieldContainer(
                   child: TextField(
                     decoration: InputDecoration(
-                      labelText: 'Email',
+                      hintText: 'Email',
                       icon: Icon(
                         Icons.person,
                         color: Color.fromRGBO(72, 72, 119, 1),
@@ -103,9 +78,7 @@ class _SignInState extends State<SignIn> {
                     shape: new RoundedRectangleBorder(
                       borderRadius: new BorderRadius.circular(50.0),
                     ),
-                    onPressed: (){
-                      auth();
-                    },
+                    onPressed: (){},
                   ),
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.015,
