@@ -350,9 +350,9 @@ class UserController {
 
   public function deleteUser(Request $rq, Response $rs, array $args) : Response {
       $id = $args['id'];
-      //$token = $args['token'];
+
       try {
-        $user = Utilisateur::where('id','=', $id);/*->where('token', '=', $token);*/
+        $user = Utilisateur::where('id','=', $id);
         $user->delete();
 
         $data = [

@@ -36,8 +36,7 @@ class EventController {
   public function events(Request $rq, Response $rs, array $args) : Response {
     try {
       $events = Evenement::select('id', 'titre', 'description', 'date', 'heure', 'latitude', 'longitude', 'adresse', 'codePostal', 'ville', 'pays', 'type')->get();
-
-
+      
       //* Mise en forme de tous les utilisateurs dans un tableau
       $users_array = [];
       foreach ($events as $event) {
@@ -460,52 +459,8 @@ class EventController {
 
   public function addComment(Request $rq, Response $rs, array $args) : Response {
     try{
+
         $id = $args['id'];
-
-        // if($rq->hasHeader('Authorization')){
-        //   //Prendre les secret du fichier settings
-        //   $secret = $this->c->settings['secret'];
-
-        //   //Enregistrer le header Authorization
-        //   $h = $rq->getHeader('Authorization')[0];
-
-        //   //Decodage du token
-        //   $tokenstring= sscanf($h, "Bearer %s")[0];
-        //   $token;
-
-        //   $token = JWT::decode($tokenstring, $secret, ['HS512']);
-
-        // }
-          // } catch(SignatureInvalidException $se){
-            //Nous traitons les erreurs
-            // $rs = $rs->withStatus(401)
-            // ->withHeader('Content-Type','application/json')->withHeader('WWW-authenticate');
-            // $rs->getBody()->write(
-            //     json_encode(
-            //         array(
-            //             'type' => 'error',
-            //             'error' => 401,
-            //             'message' => 'Token invalide'
-            //         )
-            //     )
-            // );
-            // return $rs;
-          // }
-        
-        // else {
-        //   $rs = $rs->withStatus(401)
-        //       ->withHeader('Content-Type','application/json')->withHeader('WWW-authenticate');
-        //       $rs->getBody()->write(
-        //           json_encode(
-        //               array(
-        //                   'type' => 'error',
-        //                   'error' => 401,
-        //                   'message' => 'No authorization header present'
-        //               )
-        //           )
-        //       );
-        //       return $rs;
-        // }
 
         $json_data = $rq->getParsedBody();
 
@@ -539,5 +494,22 @@ class EventController {
         return $rs;
     //Nous traitons les erreurs
     }
+  }
+
+  public function deleteComment(Request $rq, Response $rs, array $args) : Response {
+      $id = $args['id'];
+      try {
+        $comment = Commentaire::where('id','=', $id);
+        $comment->delete();
+
+        $data = [
+            'response' => 'success comment n° ' . $id . ' is deleted.'
+        ];
+
+        return Writer::json_output($rs, 200, $data);
+      }catch(Expeption $e){
+      return Writer::json_error($rs, 500, $e->getMessage());
+    }
+    return $rs->getBody()->write($id . 'deleted');
   }
 }

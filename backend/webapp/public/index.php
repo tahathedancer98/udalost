@@ -43,7 +43,7 @@ $app->delete('/utilisateurs/{id}[/]', UserController::class.':deleteUser')->setN
 
 // Événements
 // Afficher tous les événements
-$app->get('/evenements[/]', EventController::class . ':events')->setName('evenements')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
+$app->get('/evenements[/]', EventController::class . ':events')->setName('evenements')/*->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS')*/;
 // Afficher un événement en particulier
 $app->get('/evenements/{id}[/]', EventController::class . ':anEvent')->setName('evenement')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
 // Créer un événement
@@ -54,6 +54,8 @@ $app->put('/evenements/{id}', EventController::class.':editEvent')->setName('mod
 $app->put('/evenements/{id}/rejoindre[/]', EventController::class.':joinEvent')->setName('rejoindreEvenement')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
 // Laisser un commentaire sur l'événement
 $app->post('/evenements/{id}/comment[/]', EventController::class.':addComment')->setName('ajouterCommentaire')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
+// Supprimer un Commentaire
+$app->delete('/evenements/{id}/comment[/]', EventController::class.':deleteComment')->setName('supprimerCommentaire')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
 // Supprimer un événement
 $app->delete('/evenements/{id}[/]', EventController::class.':deleteEvent')->setName('supprimerEvenement')->setName('suppEvenement')->add(Cors::class.':checkHeaderOrigin')->add(Cors::class.':headersCORS');
 
