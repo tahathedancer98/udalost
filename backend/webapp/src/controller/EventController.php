@@ -86,6 +86,8 @@ class EventController {
       $createur = $event->createur()->select(['id', 'nom', 'prenom', 'email', 'username', 'token', 'derniere_connexion'])->get();
       $participantsNonInscrits = $event->participantsNonInscrits()->select(['id', 'nom', 'status', 'message'])->get();
 
+      
+
       //* Mise en forme du créateur
       $creators_array = [];
       foreach ($createur as $createur) {
@@ -106,6 +108,9 @@ class EventController {
       //* Mise en forme de tous les participants (inscrits)
       $participants_array = [];
       foreach ($event->participants as $participant) {
+        $participantValues = Participant::where('id', '=', $participant->pivot->id)->firstOrFail();
+        $commentaires = $participantValues->commentaires()->get();
+
         $participants_array[] = [
           "participant"=>[
             "id_utilisateur" => $participant->pivot->id_utilisateur,
@@ -118,6 +123,7 @@ class EventController {
             // "nom" => $participant->pivot->nom,
             "status" => $participant->pivot->status,
             "message" => $participant->pivot->message,
+            "commentaires" => $commentaires,
             "links"=>[
               "self" => ['href' => $this->c->router->pathFor('utilisateur', ['id'=> $participant->id], ['token' => $participant->token])],
             ],
@@ -133,12 +139,16 @@ class EventController {
       //* Mise en forme de tous les participants (non inscrits)
       $participantsNotRegistered = [];
       foreach ($event->participantsNonInscrits as $participantNonInscrit) {
+        $participantValues = Participant::where('id', '=', $participantNonInscrit->id)->firstOrFail();
+        $commentaires = $participantValues->commentaires()->get();
+
         $participantsNotRegistered[] = [
           "participantNonInscrit"=>[
             "id" => $participantNonInscrit->id,
             "nom" => $participantNonInscrit->nom,
             "status" => $participantNonInscrit->status,
             "message" => $participantNonInscrit->message,
+            "commentaires" => $commentaires,
           ],
         ];
       }
@@ -459,9 +469,7 @@ class EventController {
 
   public function addComment(Request $rq, Response $rs, array $args) : Response {
     try{
-
         $id = $args['id'];
-
         $json_data = $rq->getParsedBody();
 
         $c = new Client(["base_uri" => $this->c->settings['url_udalost']]);
