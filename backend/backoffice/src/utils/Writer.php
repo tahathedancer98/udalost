@@ -1,6 +1,6 @@
 <?php
 
-namespace udalost\webapp\utils;
+namespace udalost\backoffice\utils;
 use \Psr\Http\Message\ResponseInterface as Response;
 
 class Writer {

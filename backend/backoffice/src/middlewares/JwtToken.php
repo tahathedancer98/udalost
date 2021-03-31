@@ -1,10 +1,10 @@
 <?php
 
-namespace udalost\webapp\middlewares;
+namespace udalost\backoffice\middlewares;
 
 use Exception;
 use Firebase\JWT\JWT;
-use udalost\webapp\utils\Writer;
+use udalost\backoffice\utils\Writer;
 use \Psr\Http\Message\ResponseInterface as Response;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 

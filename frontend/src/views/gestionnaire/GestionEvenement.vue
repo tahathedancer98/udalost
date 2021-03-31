@@ -53,48 +53,47 @@
       </a>
     </div>
     <div id="wrapper">
-      <div
-        class="ui stackable two column grid"
-        style="margin:0px !important; width:100%; padding:0px !important; padding-left:8.2%; padding-right:8.2%; margin-bottom:3%;"
-      >
-        <div class="ui search column" style="margin:0px !important; float:right; width:100%; padding:0px !important;">
-          <div class="recherche">
-            <div>
-              <input type="radio" id="rechercheTitre" name="recherche" value="titre" checked @click='changerTextDeRecherche();'>
-              <label for="rechercheTitre">Titre</label>
-              <input type="radio" id="rechercheVille" name="recherche" value="ville" @click='changerTextDeRecherche();'>
-              <label for="rechercheVille">Ville</label>
-              <input type="radio" id="recherchePays" name="recherche" value="pays" @click='changerTextDeRecherche();'>
-              <label for="recherchePays">Pays</label>
-              <button @click="rechercher();"><i class="search icon"></i></button>
-              <button @click="afficherEvenement();"><i class="">Afficher tous les évenements</i></button>
-            </div>
-          </div> 
-              <div class="ui icon input" id="chercheur">
-                <input id="textDeRecherche" class="prompt" type="text" placeholder="Rechercher un évenement par titre..."/>
+        <div
+          class="ui stackable two column grid"
+          style="margin:0px !important; width:100%; padding:0px !important; padding-left:8.2%; padding-right:8.2%; margin-bottom:3%;"
+        >
+          <div class="ui search column" style="margin:0px !important; float:right; width:100%; padding:0px !important;">
+            <div class="recherche">
+              <div>
+                <input type="radio" id="rechercheTitre" name="recherche" value="titre" checked @click='changerTextDeRecherche();'>
+                <label for="rechercheTitre">Titre</label>
+                <input type="radio" id="rechercheVille" name="recherche" value="ville" @click='changerTextDeRecherche();'>
+                <label for="rechercheVille">Ville</label>
+                <input type="radio" id="recherchePays" name="recherche" value="pays" @click='changerTextDeRecherche();'>
+                <label for="recherchePays">Pays</label>
+                <button @click="rechercher();"><i class="search icon"></i></button>
+                <button @click="afficherEvenement();"><i class="">Afficher tous les évenements</i></button>
               </div>
-        </div>
-      </div>
-      
-      <div class="ui link cards stackable five column grid" id="cardsEvenement">
-        <a class="card column"id="cardDiv" v-for="(ev, i) in this.listeEvenements">
-          <div style="color:black;">
-            <div id="iconB">
-            <a>
-              <i class="large red trash alternate icon" @click="suppEvenement(ev.id)"></i>
-            </a>
+            </div> 
+                <div class="ui icon input" id="chercheur">
+                  <input id="textDeRecherche" class="prompt" type="text" placeholder="Rechercher un évenement par titre..."/>
+                </div>
           </div>
-            <div class="image" id="imageCard">
-              <img src="../../assets/images/iconCalendar.png" />
-            </div>
-            <div class="content">
-              <div class="header">{{ ev.titre }}</div>
+        </div>
+      <!-- Affichage de tous les évenements  -->
+      <div class="ui link cards stackable five column grid" id="cardsEvenement">
+        <a id="cardDiv" class="card column" v-for="(ev, i) in this.listeEvenements">
+          <div id="iconB">
+              <a>
+                <i class="large red trash alternate icon" @click="suppEvenement(ev.id)"></i>
+              </a>
+          </div>
+          <div class="image" id="imageCard">
+            <img src="../../assets/images/iconCalendar.png" />
+          </div>
+          <div class="content">
+              <div class="header">Titre : {{ ev.titre }}</div>
               <div class="meta">
-                <a>{{ ev.adresse }} {{ ev.codePostal }} {{ ev.ville }} {{ ev.pays }}
+                <a>Aresse : {{ ev.adresse }}, CP : {{ ev.codePostal }}, Ville : {{ ev.ville }}, Pays: {{ ev.pays }}
                 </a>
               </div>
               <div class="description">
-                {{ ev.description }}
+                Description : {{ ev.description }}
               </div>
             </div>
             <div class="extra content" id="content">
@@ -102,10 +101,57 @@
                 Date : {{ ev.date }} {{ ev.heure }}
               </span>
             </div>
-          </div>
         </a>
       </div>
-  </div>
+      <!--FIN TABLE-->
+
+      <!-- Affichage d'un évenement trouvé-->
+      <div class="ui link cards stackable five column grid" id="cardsEvenementRecherche" style='justify-content:center;text-align:center;' >
+        <a id="cardDivRecherche" class="card column">
+          <div id="iconB">
+            <button class='large red trash alternate icon' @click="suppEvenement();">SUPP</button>
+          </div>
+          <div class="image" id="imageCard">
+            <img src="../../assets/images/iconCalendar.png" />
+          </div>
+            <div class="content">
+              <div class="header">Titre : {{ this.eventRecherche.titre }}</div>
+              <div class="meta">
+                <a>Aresse : {{ this.eventRecherche.adresse }}, CP : {{ this.eventRecherche.codePostal }}, Ville : {{ this.eventRecherche.ville }}, Pays: {{ this.eventRecherche.pays }}
+                </a>
+              </div>
+              <div class="description">
+                Description : {{ this.eventRecherche.description }}
+              </div>
+            </div>
+            <div class="extra content" id="content">
+              <span class="right floated" id="date">
+                Date : {{ this.eventRecherche.date }} {{ this.eventRecherche.heure }}
+              </span>
+            </div>
+        </a>
+      </div>
+
+      <!-- Affichage d'un évenement non trouvé-->
+      <div class="ui link cards stackable five column grid" id="cardsEvenementRechercheNonTrouvee" style='justify-content:center;text-align:center;'>
+        <a id="cardDivRecherche" class="card column">
+          <div class="image" id="imageCard">
+            <img src="../../assets/images/iconCalendar.png" />
+          </div>
+            <div class="content">
+              <div class="header">
+                L'évenement n'existe pas malheureusement !
+              </div>
+              <div class="meta">
+                <a>
+                  ---------
+                </a>
+              </div>
+            </div>
+        </a>
+      </div>
+
+      </div>
 
     <div id="copyright" class="container">
       <p>
@@ -131,7 +177,10 @@ export default {
 
   methods: {
     afficherEvenement() {
-      api({
+      document.getElementById('cardsEvenementRecherche').style.display='none';
+      document.getElementById('cardsEvenementRechercheNonTrouvee').style.display='none';
+      document.getElementById('cardsEvenement').style.display='none';
+      api_back({
         url: `http://localhost:8080/evenements/`,
         method: "GET",
       })
@@ -139,14 +188,19 @@ export default {
           (response) => {
             this.listeEvenements = [];
             this.eventRecherche = [];
+
             if (response.data.evenements.length > 0) {
-              // console.log(response.data.evenements[0].evenement);
+              
               console.log(response.data.evenements.length);
+
               for (var i = 0;i < response.data.evenements.length;i++) {
                 this.listeEvenements[i] = response.data.evenements[i].evenement;
               }
+
               this.trierEvenements();
+              document.getElementById('cardsEvenement').style.display='flex';
               console.log(this.listeEvenements);
+
             } else {
               console.log("Il y a pas des évenements");
               this.listeEvenements = [];
@@ -159,9 +213,43 @@ export default {
           }
         )
         .catch((error) => {
-          alert("Error :" + error);
+          alert("Il n'y a pas d'évenements");
         });
 
+    },
+    suppEvenement(id) {
+      console.log('okkk');
+      if(confirm('Voulez-vous supprimer cet événement ?')) {
+        api_back({
+          url: `http://localhost:8080/evenements/` + id,
+          method: "DELETE",
+        })
+          .then((response) => {
+            console.log("L'évenement est bien supprimé");
+            location.reload();
+            // this.$router.push("/gestionEvenement");
+          })
+          .catch((error) => {
+            console.log("Error ========>", error);
+          });
+      }
+    },
+    suppEvenement() {
+      console.log('okkk');
+      if(confirm('Voulez-vous supprimer cet événement ?')) {
+        api_back({
+          url: `http://localhost:8080/evenements/` + this.eventRecherche.id,
+          method: "DELETE",
+        })
+          .then((response) => {
+            console.log("L'évenement est bien supprimé");
+            location.reload();
+            // this.$router.push("/gestionEvenement");
+          })
+          .catch((error) => {
+            console.log("Error ========>", error);
+          });
+      }
     },
     trierEvenements() {
         this.listeEvenements.sort(function(a,b){
@@ -174,18 +262,58 @@ export default {
           return 0;
         });
     },
-    suppEvenement(id) {
-      if(confirm('Voulez-vous supprimer cet événement ?')) {
-        api
-          .delete("http://localhost:8080/evenements/" + id)
-          .then((response) => {
-            console.log("L'évenement est bien supprimé");
-            location.reload();
-            // this.$router.push("/gestionEvenement");
-          })
-          .catch((error) => {
-            console.log("Error ========>", error);
-          });
+    rechercher(){
+      var textSaisie = document.getElementById('textDeRecherche');
+      
+      var results = [];
+      var condition=null;
+      if(textSaisie.value == ''){
+        alert('veuillez remplir le champ de text pour rechercher !');
+      }else{
+        this.eventRecherche = [];
+
+        document.getElementById('cardsEvenement').style.display='none';
+        document.getElementById('cardsEvenementRecherche').style.display='none';
+        document.getElementById('cardsEvenementRechercheNonTrouvee').style.display='none';
+
+        console.log('great!');
+        if(document.getElementById('rechercheTitre').checked){
+
+          for(var event of this.listeEvenements){
+            if(event.titre == textSaisie.value){
+              this.eventRecherche = event;
+              console.log(this.eventRecherche);
+              condition=true;
+            }
+          }
+          
+        }else if(document.getElementById('rechercheVille').checked){
+
+          for(var event of this.listeEvenements){
+            if(event.ville == textSaisie.value){
+              this.eventRecherche = event;
+              condition=true;
+              console.log(this.eventRecherche);
+            }
+          }
+
+        }else if(document.getElementById('recherchePays').checked){
+
+          for(var event of this.listeEvenements){
+            if(event.email == textSaisie.value){
+              this.eventRecherche = event;
+              condition=true;
+              console.log(this.eventRecherche);
+            }
+          }
+        }
+        if(condition == true){
+          document.getElementById('cardsEvenementRecherche').style.display='flex';
+          document.getElementById('cardsEvenementRechercheNonTrouvee').style.display ='none';
+        }else{
+          document.getElementById('cardsEvenementRecherche').style.display='none';
+          document.getElementById('cardsEvenementRechercheNonTrouvee').style.display ='flex';
+        }
       }
     },
     seDeconnecter() {
@@ -588,7 +716,8 @@ a:hover {
 
 #cardsEvenement {
   text-align: center;
-  display: block !important;
+  justify-content: center;
+  display: flex;
 
   & #cardDiv {
     display: inline-block;

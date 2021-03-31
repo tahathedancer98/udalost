@@ -1,15 +1,15 @@
 <?php
 
-namespace udalost\webapp\controller;
+namespace udalost\backoffice\controller;
 
 use Slim\Router;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-use udalost\webapp\utils\Writer;
-use udalost\webapp\models\Evenement;
-use udalost\webapp\models\Participant;
-use udalost\webapp\models\Commentaire;
+use udalost\backoffice\utils\Writer;
+use udalost\backoffice\models\Evenement;
+use udalost\backoffice\models\Participant;
+use udalost\backoffice\models\Commentaire;
 
 use \Psr\Http\Message\ResponseInterface as Response;
 use \Psr\Http\Message\ServerRequestInterface as Request;

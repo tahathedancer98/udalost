@@ -1,10 +1,10 @@
 <?php
 
-namespace udalost\webapp\errors;
+namespace udalost\backoffice\errors;
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
-use udalost\webapp\utils\Writer;
+use udalost\backoffice\utils\Writer;
 use Slim\Container as C;
 
 class BadUri {

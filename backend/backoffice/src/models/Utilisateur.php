@@ -1,6 +1,6 @@
 <?php
 
-namespace udalost\webapp\models;
+namespace udalost\backoffice\models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;  
@@ -14,11 +14,11 @@ class Utilisateur extends Model {
 	public $timestamps = false;
 
 	public function evenementsCrees() {
-		return $this->hasMany('udalost\webapp\models\Evenement', 'id_utilisateur');
+		return $this->hasMany('udalost\backoffice\models\Evenement', 'id_utilisateur');
 	}
 
   public function evenements() {
-		return $this->belongsToMany('udalost\webapp\models\Evenement', // Table cible
+		return $this->belongsToMany('udalost\backoffice\models\Evenement', // Table cible
 	           						'participant', // Table Pivot
 	           						'id_utilisateur', // Foreign Key cible de la table pivot
 	        						'id_evenement') //Foreign Key assoc 

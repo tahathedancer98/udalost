@@ -1,7 +1,7 @@
 <?php
-use udalost\webapp\errors\BadUri;
-use udalost\webapp\errors\NotAllowed;
-use udalost\webapp\errors\Internal;
+use udalost\backoffice\errors\BadUri;
+use udalost\backoffice\errors\NotAllowed;
+use udalost\backoffice\errors\Internal;
 
 return [
     'notFoundHandler' => function($c){

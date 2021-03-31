@@ -109,7 +109,7 @@
       </div>
       <!--FIN TABLE-->
 
-      <!-- La partie Recherche Trouvé-->
+      <!-- Affichage d'un utilisateur trouvé-->
       <div class="ui link cards stackable five column grid" id="cardsEvenementRecherche" style='justify-content:center;text-align:center;' >
         <a id="cardDivRecherche" class="card column">
           <div class="image" id="imageCard">
@@ -140,7 +140,7 @@
         </a>
       </div>
 
-      <!-- La partie Recherche NON Trouvé-->
+      <!-- Affichage d'un utilisateur non trouvé-->
       <div class="ui link cards stackable five column grid" id="cardsEvenementRechercheNonTrouvee" style='justify-content:center;text-align:center;'>
         <a id="cardDivRecherche" class="card column">
           <div class="image" id="imageCard">
@@ -195,7 +195,7 @@ export default {
       document.getElementById('cardsEvenementRecherche').style.display='none';
       document.getElementById('cardsEvenementRechercheNonTrouvee').style.display='none';
 
-      api({
+      api_back({
         url: `http://localhost:8080/utilisateurs/`,
         method: "GET",
       })
@@ -225,7 +225,8 @@ export default {
           }
         )
         .catch((error) => {
-          alert("Error :" + error);
+          alert("Il n'y a pas d'utilisateurs");
+          
         });
     },
     trierEvenements() {
@@ -253,11 +254,27 @@ export default {
         }
       }
     },
-    suppUtilisateur(){
-      console.log(this.userRecherche.id);
+    suppUtilisateur(id){
       if(confirm('Voulez-vous supprimer cet utilisateur ?')) {
-        api
-          .delete("http://localhost:8080/utilisateurs/" + this.userRecherche.id)
+        api_back({
+          url: `http://localhost:8080/utilisateurs/` + id,
+          method: "DELETE",
+        })
+          .then((response) => {
+            console.log("L'utilisateur est bien supprimé");
+            location.reload();
+          })
+          .catch((error) => {
+            console.log("Error ========>", error);
+          });
+      }
+    },
+    suppUtilisateur(){
+      if(confirm('Voulez-vous supprimer cet utilisateur ?')) {
+        api_back({
+          url: `http://localhost:8080/utilisateurs/` + this.userRecherche.id,
+          method: "DELETE",
+        })
           .then((response) => {
             console.log("L'utilisateur est bien supprimé");
             location.reload();

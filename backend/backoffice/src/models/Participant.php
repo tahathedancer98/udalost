@@ -1,6 +1,6 @@
 <?php
 
-namespace udalost\webapp\models;
+namespace udalost\backoffice\models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;  
@@ -11,7 +11,7 @@ class Participant extends Model {
   public $timestamps = false;
 
 	public function commentaires() {
-    return $this->hasMany('udalost\webapp\models\Commentaire', 'id_participant');
+    return $this->hasMany('udalost\backoffice\models\Commentaire', 'id_participant');
   }
 
 }

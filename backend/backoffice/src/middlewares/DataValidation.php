@@ -1,6 +1,6 @@
 <?php
 
-namespace udalost\webapp\middlewares;
+namespace udalost\backoffice\middlewares;
 
 use Respect\Validation\Validator as v;
 

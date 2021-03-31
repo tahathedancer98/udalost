@@ -1,13 +1,13 @@
 <?php
 
-namespace udalost\webapp\controller;
+namespace udalost\backoffice\controller;
 
 use Slim\Router;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-use udalost\webapp\utils\Writer;
-use udalost\webapp\models\Utilisateur;
+use udalost\backoffice\utils\Writer;
+use udalost\backoffice\models\Utilisateur;
 
 use \Psr\Http\Message\ResponseInterface as Response;
 use \Psr\Http\Message\ServerRequestInterface as Request;

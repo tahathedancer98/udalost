@@ -15,6 +15,11 @@ window.api = axios.create({
   baseURL: "https://api.udalost.web:10243/"
 });
 
+window.api_back = axios.create({
+  baseURL: "https://api.udalost.back:10043/"
+});
+
+
 axios.interceptors.response.use(function (response) {
   return response;
 }, function (error) {

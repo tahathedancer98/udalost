@@ -1,6 +1,6 @@
 <?php
 
-namespace udalost\webapp\models;
+namespace udalost\backoffice\models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;  
@@ -10,6 +10,6 @@ class Commentaire extends Model {
   protected $primaryKey = 'id';
 
   public function participant() {
-    return $this->belongsTo('udalost\webapp\models\Participant', 'id_participant');
+    return $this->belongsTo('udalost\backoffice\models\Participant', 'id_participant');
   }
 } 
