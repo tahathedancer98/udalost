@@ -28,28 +28,6 @@ services:
     links:
       - mysql:db
 
-  ###########
-  # service php / apache utilisant le vhost par défaut
-  #
-  #  le service sera accessible à https://docketu.iutnc.univ-lorraine.fr:19143
-  ###########
-  api.udalost.mobile:
-    image: canals/php:latest
-    environment:
-      - VHOST_HOSTNAME=api.udalost.mobile
-      - VHOST_DOCROOT=/var/www/mobile
-    ports:
-      - "10180:80"
-      - "10143:443"
-    volumes:
-      - ./backend/mobileapp/public:/var/www/mobile
-      - ./backend/mobileapp/src:/var/www/src
-    working_dir: /var/www/src
-    networks:
-      - udalost.net
-    links:
-      - mysql:db
-
     # API web
   api.udalost.web:
     image: canals/php:latest
@@ -67,21 +45,6 @@ services:
       - udalost.net
     links:
       - mysql:db
-
-  ###############
-  #  service apache pour la webapp front
-  #  service accessible sur http://docketu.iutnc.univ-lorraine.fr:19280
-  ###############
-
-  webfront:
-    image: httpd:latest
-    ports:
-      - "10380:80"
-    volumes:
-      - ./frontend/public:/usr/local/apache2/htdocs
-    working_dir: /usr/local/apache2/htdocs
-    networks:
-      - udalost.net
 
   #############################
   # mysql + phpmyadmin
