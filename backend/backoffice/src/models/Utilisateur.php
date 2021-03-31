@@ -1,19 +1,21 @@
 <?php
 
-<<<<<<< Updated upstream
-namespace udalost\backend\models;
-=======
-namespace udalost\backoffice\models;
->>>>>>> Stashed changes
+namespace udalost\webapp\models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;  
 
+
 class Utilisateur extends Model {
   protected $table = 'utilisateur';
-  protected $primaryKey = 'id';
+	protected $primaryKey = 'id';
 	public $incrementing = false;   // pas d'auto incrementation
 	public $keyType = 'string';		// id sous forme de string
+	public $timestamps = false;
+
+	public function evenementsCrees() {
+		return $this->hasMany('udalost\webapp\models\Evenement', 'id_utilisateur');
+	}
 
   public function evenements() {
 		return $this->belongsToMany('udalost\webapp\models\Evenement', // Table cible
