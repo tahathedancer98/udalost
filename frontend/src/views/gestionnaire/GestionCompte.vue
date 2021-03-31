@@ -58,50 +58,44 @@
         style="margin:0px !important; width:100%; padding:0px !important; padding-left:8.2%; padding-right:8.2%; margin-bottom:3%;"
       >
         <div class="ui search column" style="margin:0px !important; float:right; width:100%; padding:0px !important;">
-          <div class="ui icon input" id="chercheur">
-            <input class="prompt" type="text" placeholder="Rechercher évenement..."/>
-            <i class="search icon"></i><br/>
-          </div>
-          <div class="results"></div>
+          <div class="recherche">
+            <div>
+              <input type="radio" id="rechercheNom" name="recherche" value="nom" checked @click='changerTextDeRecherche();'>
+              <label for="rechercheNom">Nom</label>
+              <input type="radio" id="rechercheUsername" name="recherche" value="username" @click='changerTextDeRecherche();'>
+              <label for="rechercheUsername">Username</label>
+              <input type="radio" id="rechercheEmail" name="recherche" value="mail" @click='changerTextDeRecherche();'>
+              <label for="rechercheEmail">Email</label>
+              <button @click="rechercher();"><i class="search icon"></i></button>
+              <button @click="afficherUtilisateurs();"><i class="">Afficher tous les utilisateurs</i></button>
+            </div>
+          </div> 
+              <div class="ui icon input" id="chercheur">
+                <input id="textDeRecherche" class="prompt" type="text" placeholder="Rechercher un utilisateur par nom..."/>
+              </div>
         </div>
       </div>
       <!--TABLE-->
-      <!-- <div class="recherche">
-        <div>
-          <input type="radio" id="rechercheNom" name="recherche" value="nom" checked>
-          <label for="huey">Nom</label>
-        </div>
 
-        <div>
-          <input type="radio" id="rechercheUsername" name="recherche" value="username">
-          <label for="dewey">Username</label>
-        </div>
 
-        <div>
-          <input type="radio" id="rechercheEmail" name="recherche" value="mail">
-          <label for="louie">Email</label>
-        </div>
-      </div>        
-      <div class="search icon" @click="rechercher()"></div> -->
-
+      <!-- Affichage de tous les utilisateurs  -->
       <div class="ui link cards stackable five column grid" id="cardsEvenement">
         <a id="cardDiv" class="card column" v-for="(ev, i) in this.listUtilisateurs">
-
           <div class="image" id="imageCard">
             <img src="../../assets/images/users.png" />
           </div>
             <div class="content">
               <div class="header">
-                {{ ev.nom }} {{ ev.prenom }}
+                Nom et prénom : {{ ev.nom }} {{ ev.prenom }}
               </div>
               <div class="meta">
                 <a>
-                  {{ ev.username }}
+                  Username : {{ ev.username }}
                 </a>
               </div>
               <div class="mail" id="divMail">
                 <div id="leMail">
-                  {{ ev.email }}
+                  Email : {{ ev.email }}
                 </div>
                 <button class='large red trash alternate icon' id='' @click="suppUtilisateur(ev.id);">SUPP</button>
               </div>
@@ -114,6 +108,57 @@
         </a>
       </div>
       <!--FIN TABLE-->
+
+      <!-- La partie Recherche Trouvé-->
+      <div class="ui link cards stackable five column grid" id="cardsEvenementRecherche" style='justify-content:center;text-align:center;' >
+        <a id="cardDivRecherche" class="card column">
+          <div class="image" id="imageCard">
+            <img src="../../assets/images/users.png" />
+          </div>
+            <div class="content">
+              <div class="header">
+                Nom et prénom : {{ this.userRecherche.nom }}  {{ this.userRecherche.prenom }}
+              </div>
+              <div class="meta">
+                <a>
+                  Username : {{ this.userRecherche.username }}
+                </a>
+              </div>
+              <div class="mail" id="divMail">
+                <div id="leMail">
+                  Email : {{ this.userRecherche.email }}
+                  
+                </div>
+                <button class='large red trash alternate icon' id='' @click="suppUtilisateur();">SUPP</button>
+              </div>
+            </div>
+            <div class="extra content" id="content">
+              <span class="right floated" id="date">
+                Dernière connexion : {{ this.userRecherche.derniere_connexion }}
+              </span>
+            </div>
+        </a>
+      </div>
+
+      <!-- La partie Recherche NON Trouvé-->
+      <div class="ui link cards stackable five column grid" id="cardsEvenementRechercheNonTrouvee" style='justify-content:center;text-align:center;'>
+        <a id="cardDivRecherche" class="card column">
+          <div class="image" id="imageCard">
+            <img src="../../assets/images/users.png" />
+          </div>
+            <div class="content">
+              <div class="header">
+                L'utilisateur n'existe pas malheureusement !
+              </div>
+              <div class="meta">
+                <a>
+                  ---------
+                </a>
+              </div>
+            </div>
+        </a>
+      </div>
+      
     </div>
     <div id="copyright" class="container">
       <p>
@@ -129,14 +174,15 @@ export default {
   name: "Home",
   data() {
     return {
-      listUtilisateurs : []
+      listUtilisateurs : [],
+      userRecherche: []
     };
   },
   components: {
   },
   mounted() {
     this.afficherUtilisateurs();
-    // this.verifyAdmin();
+    // this.rechercher();
   },
   computed:{
     membreConnected() {
@@ -146,6 +192,9 @@ export default {
   },
   methods: {
     afficherUtilisateurs(){
+      document.getElementById('cardsEvenementRecherche').style.display='none';
+      document.getElementById('cardsEvenementRechercheNonTrouvee').style.display='none';
+
       api({
         url: `http://localhost:8080/utilisateurs/`,
         method: "GET",
@@ -153,6 +202,7 @@ export default {
         .then(
           (response) => {
             this.listUtilisateurs = [];
+            this.userRecherche = [];
             if (response.data.utilisateurs.length > 0) {
               // console.log(response.data.evenements[0].evenement);
               console.log(response.data.utilisateurs.length);
@@ -160,7 +210,9 @@ export default {
                 this.listUtilisateurs[i] = response.data.utilisateurs[i].utilisateur;
               }
               this.trierEvenements();
+              document.getElementById('cardsEvenement').style.display='flex';
               console.log(this.listUtilisateurs);
+              this.changerTextDeRecherche();
             } else {
               console.log("Il y a pas d'utilisateur");
               this.listUtilisateurs = [];
@@ -201,10 +253,11 @@ export default {
         }
       }
     },
-    suppUtilisateur(id){
+    suppUtilisateur(){
+      console.log(this.userRecherche.id);
       if(confirm('Voulez-vous supprimer cet utilisateur ?')) {
         api
-          .delete("http://localhost:8080/utilisateurs/" + id)
+          .delete("http://localhost:8080/utilisateurs/" + this.userRecherche.id)
           .then((response) => {
             console.log("L'utilisateur est bien supprimé");
             location.reload();
@@ -215,7 +268,71 @@ export default {
       }
     },
     rechercher(){
+      var textSaisie = document.getElementById('textDeRecherche');
+      var results = [];
+      var condition=null;
+      if(textSaisie.value == ''){
+        alert('veuillez remplir le champ de text pour rechercher !');
+      }else{
+        this.userRecherche = [];
+        document.getElementById('cardsEvenement').style.display='none';
+        document.getElementById('cardsEvenementRecherche').style.display='none';
+        document.getElementById('cardsEvenementRechercheNonTrouvee').style.display ='none';
 
+        if(document.getElementById('rechercheNom').checked){
+
+          for(var user of this.listUtilisateurs){
+            if(user.nom == textSaisie.value){
+              this.userRecherche = user;
+              console.log(this.userRecherche);
+              condition=true;
+            }
+          }
+          
+        }else if(document.getElementById('rechercheUsername').checked){
+
+          for(var user of this.listUtilisateurs){
+            if(user.username == textSaisie.value){
+              this.userRecherche = user;
+              condition=true;
+              console.log(this.userRecherche);
+            }
+          }
+
+        }else if(document.getElementById('rechercheEmail').checked){
+
+          for(var user of this.listUtilisateurs){
+            if(user.email == textSaisie.value){
+              this.userRecherche = user;
+              condition=true;
+              console.log(this.userRecherche);
+            }
+          }
+        }
+        if(condition == true){
+          document.getElementById('cardsEvenement').style.display='none';
+          document.getElementById('cardsEvenementRecherche').style.display='flex';
+          document.getElementById('cardsEvenementRechercheNonTrouvee').style.display ='none';
+        }else{
+          document.getElementById('cardsEvenement').style.display='none';
+          document.getElementById('cardsEvenementRecherche').style.display='none';
+          document.getElementById('cardsEvenementRechercheNonTrouvee').style.display ='flex';
+        }
+
+      }
+      this.listUtilisateurs = results;
+    },
+    changerTextDeRecherche(){
+      if(document.getElementById('rechercheNom').checked){
+        document.getElementById('textDeRecherche').value ='';
+        document.getElementById('textDeRecherche').placeholder="Recherche un utilisateur par Nom...";
+      }else if(document.getElementById('rechercheUsername').checked){
+        document.getElementById('textDeRecherche').value ='';
+        document.getElementById('textDeRecherche').placeholder="Recherche un utilisateur par Username...";
+      }else if(document.getElementById('rechercheEmail').checked){
+        document.getElementById('textDeRecherche').value ='';
+        document.getElementById('textDeRecherche').placeholder="Recherche un utilisateur par Email...";
+      }
     },
     seDeconnecter() {
       this.$store.commit('setMembre', '');

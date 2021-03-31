@@ -66,7 +66,7 @@ class UserController {
     catch(ModelNotFoundException $e){
       return Writer::json_error($rs, 404, "user not found");
     }
-    }
+  }
 
   public function aUser(Request $rq, Response $rs, array $args) : Response {
     $id = $args['id'];
@@ -167,7 +167,7 @@ class UserController {
       // ($this->c->get('logger.error'))->error("command $id not found", [404]);
       return Writer::json_error($rs, 404, "user $id not found");
     }
-    }
+  }
 
   public function deleteUser(Request $rq, Response $rs, array $args) : Response {
       $id = $args['id'];
@@ -185,5 +185,5 @@ class UserController {
         return Writer::json_error($rs, 500, $e->getMessage());
       }
       return $rs->getBody()->write($id . 'deleted');
-    }
+  }
 }

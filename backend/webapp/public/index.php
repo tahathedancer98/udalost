@@ -19,11 +19,7 @@ $api_container = new \Slim\Container(array_merge($api_settings, $api_errors));
 
 $app = new \Slim\App($api_container);
 
-<<<<<<< Updated upstream
 // $app->add(Cors::class.':checkHeaderOrigin');
-=======
-/*$app->add(Cors::class.':checkHeaderOrigin');*/
->>>>>>> Stashed changes
 
 DataBaseConnection::startEloquent($api_container->settings['db']);
 

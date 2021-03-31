@@ -57,19 +57,22 @@
         class="ui stackable two column grid"
         style="margin:0px !important; width:100%; padding:0px !important; padding-left:8.2%; padding-right:8.2%; margin-bottom:3%;"
       >
-        <div
-          class="ui search column"
-          style="margin:0px !important; float:right; width:100%; padding:0px !important;"
-        >
-          <div class="ui icon input" id="chercheur">
-            <input
-              class="prompt"
-              type="text"
-              placeholder="Rechercher évenement..."
-            />
-            <i class="search icon"></i>
-          </div>
-          <div class="results"></div>
+        <div class="ui search column" style="margin:0px !important; float:right; width:100%; padding:0px !important;">
+          <div class="recherche">
+            <div>
+              <input type="radio" id="rechercheTitre" name="recherche" value="titre" checked @click='changerTextDeRecherche();'>
+              <label for="rechercheTitre">Titre</label>
+              <input type="radio" id="rechercheVille" name="recherche" value="ville" @click='changerTextDeRecherche();'>
+              <label for="rechercheVille">Ville</label>
+              <input type="radio" id="recherchePays" name="recherche" value="pays" @click='changerTextDeRecherche();'>
+              <label for="recherchePays">Pays</label>
+              <button @click="rechercher();"><i class="search icon"></i></button>
+              <button @click="afficherEvenement();"><i class="">Afficher tous les évenements</i></button>
+            </div>
+          </div> 
+              <div class="ui icon input" id="chercheur">
+                <input id="textDeRecherche" class="prompt" type="text" placeholder="Rechercher un évenement par titre..."/>
+              </div>
         </div>
       </div>
       
@@ -118,7 +121,8 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      listeEvenements : []
+      listeEvenements : [],
+      eventRecherche: []
     };
   },
   mounted() { 
@@ -134,15 +138,14 @@ export default {
         .then(
           (response) => {
             this.listeEvenements = [];
+            this.eventRecherche = [];
             if (response.data.evenements.length > 0) {
               // console.log(response.data.evenements[0].evenement);
               console.log(response.data.evenements.length);
               for (var i = 0;i < response.data.evenements.length;i++) {
                 this.listeEvenements[i] = response.data.evenements[i].evenement;
               }
-
               this.trierEvenements();
-
               console.log(this.listeEvenements);
             } else {
               console.log("Il y a pas des évenements");
