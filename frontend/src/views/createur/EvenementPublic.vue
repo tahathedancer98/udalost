@@ -71,26 +71,29 @@
 
     <div id="wrapper">
       <div
-        class="ui stackable two column grid"
-        style="margin:0px !important; width:100%; padding:0px !important; padding-left:8.2%; padding-right:8.2%; margin-bottom:3%;"
-      >
-        <div
-          class="ui search column"
-          style="margin:0px !important; float:right; width:100%; padding:0px !important;"
+          class="ui stackable two column grid"
+          style="margin:0px !important; width:100%; padding:0px !important; padding-left:8.2%; padding-right:8.2%; margin-bottom:3%;"
         >
-          <div class="ui icon input" id="chercheur">
-            <input
-              class="prompt"
-              type="text"
-              placeholder="Rechercher évenement..."
-            />
-            <i class="search icon"></i>
+          <div class="ui search column" style="margin:0px !important; float:right; width:100%; padding:0px !important;">
+            <div class="recherche">
+              <div>
+                <input type="radio" id="rechercheTitre" name="recherche" value="titre" checked @click='changerTextDeRecherche();'>
+                <label for="rechercheTitre">Titre</label>
+                <input type="radio" id="rechercheVille" name="recherche" value="ville" @click='changerTextDeRecherche();'>
+                <label for="rechercheVille">Ville</label>
+                <input type="radio" id="recherchePays" name="recherche" value="pays" @click='changerTextDeRecherche();'>
+                <label for="recherchePays">Pays</label>
+                <button @click="rechercher();"><i class="search icon"></i></button>
+                <button @click="afficherEvenement();"><i class="">Afficher tous les évenements</i></button>
+              </div>
+            </div> 
+                <div class="ui icon input" id="chercheur">
+                  <input id="textDeRecherche" class="prompt" type="text" placeholder="Rechercher un évenement par titre..."/>
+                </div>
           </div>
-          <div class="results"></div>
         </div>
-      </div>
       <!--TABLE-->
-      <div id="messageVideE">
+     <div id="messageVideE">
         <span
           ><i class="frown icon"></i> Vous n'avez pas encore créé
           d'événements</span
@@ -99,20 +102,19 @@
       <div
         class="ui link cards stackable five column grid"
         id="cardsEvenement"
-        @click="afficherEvenement"
-      >
+        @click="afficherEvenement">
         <a
           href="#visualiserEvenement-modal"
           class="card column"
           id="cardDiv"
-          v-for="(ev, i) in listeEvenements.evenement"
+          v-for="(ev, i) in this.listeEvenements"
         >
-          <div style="color:black;" @click="unEvenement(ev.id)">
+          <div style="color:black; ">  <!-- "@click="unEvenement(ev.id)" -->          
             <div class="image" id="imageCard">
               <img src="../../assets/images/iconCalendar.png" />
             </div>
             <div class="content">
-              <div class="header">{{ ev.titre }}</div>
+              <div class="header">Titre : {{ ev.titre }}</div>
               <div class="meta">
                 <a
                   >{{ ev.adresse }} {{ ev.codePostal }} {{ ev.ville }}
@@ -228,108 +230,114 @@
 </template>
 
 <script>
-import HelloWorld from "@/components/HelloWorld.vue";
+
 import axios from "axios";
 
 export default {
-  name: "Home",
   data() {
     return {
       listeEvenements: [],
     };
   },
+
   components: {
-    HelloWorld,
   },
+
   mounted() {
-    this.afficherEvenementsPublics();
+    this.afficherEvenementsPublic();
   },
+
   methods: {
 
-    rejoindreEvenement(id) {
-      const config = {
-        headers: { Authorization: `Bearer ${this.token}` },
-      };
-      axios
-        .put(
-          "http://localhost:8080/evenements/" + id + "/rejoindre",
-          {
-            nom: "",
-            status: "2",
-            message: "Bonjour, je suis le createur",
-          },
-          config
-        )
-        .then((response) => {
-          console.log("REJOINDRE EVENEMENT");
-          console.log(response.data);
-        })
-        .catch((error) => {
-          console.log("Error ========>", error);
-        });
-    },
+    // rejoindreEvenement(id) {
+    //   const config = {
+    //     headers: { Authorization: `Bearer ${this.token}` },
+    //   };
+    //   axios
+    //     .put(
+    //       "http://localhost:8080/evenements/" + id + "/rejoindre",
+    //       {
+    //         nom: "",
+    //         status: "2",
+    //         message: "Bonjour, je suis le createur",
+    //       },
+    //       config
+    //     )
+    //     .then((response) => {
+    //       console.log("REJOINDRE EVENEMENT");
+    //       console.log(response.data);
+    //     })
+    //     .catch((error) => {
+    //       console.log("Error ========>", error);
+    //     });
+    // },
 
-    afficherEvenementsUser() {
+    // afficherEvenementsUser() {
 
-      axios({
-        url: `http://localhost:8080/utilisateurs/` + this.id,
-        method: "GET",
-      })
-        .then(
-          (response) => {
-            if (response.data.utilisateur[0].evenementsCrees[0].length > 0) {
-              console.log("Il y a des évenements");
-              //response.data.utilisateur[0].evenementsCrees[0][0].evenementCree
-              this.listeEvenements =
-                response.data.utilisateur[0].evenementsCrees[0];
-              for (
-                var i = 0;
-                i < response.data.utilisateur[0].evenementsCrees[0].length;
-                i++
-              ) {
-                this.listeEvenements[i] =
-                  response.data.utilisateur[0].evenementsCrees[0][
-                    i
-                  ].evenementCree;
-              }
-            } else {
-              console.log("Il y a pas des évenements");
-              this.listeEvenements = [];
-              document.getElementById("messageVideE").style.display = "block";
-            }
-          },
-          function(err) {
-            //throw new Error("end of pagination");
-            console.log("error");
-          }
-        )
-        .catch((error) => {
-          alert("Error :" + error);
-        });
-    },
+    //   axios({
+    //     url: `http://localhost:8080/utilisateurs/` + this.id,
+    //     method: "GET",
+    //   })
+    //     .then(
+    //       (response) => {
+    //         if (response.data.utilisateur[0].evenementsCrees[0].length > 0) {
+    //           console.log("Il y a des évenements");
+    //           //response.data.utilisateur[0].evenementsCrees[0][0].evenementCree
+    //           this.listeEvenements =
+    //             response.data.utilisateur[0].evenementsCrees[0];
+    //           for (
+    //             var i = 0;
+    //             i < response.data.utilisateur[0].evenementsCrees[0].length;
+    //             i++
+    //           ) {
+    //             this.listeEvenements[i] =
+    //               response.data.utilisateur[0].evenementsCrees[0][
+    //                 i
+    //               ].evenementCree;
+    //           }
+    //         } else {
+    //           console.log("Il y a pas des évenements");
+    //           this.listeEvenements = [];
+    //           document.getElementById("messageVideE").style.display = "block";
+    //         }
+    //       },
+    //       function(err) {
+    //         //throw new Error("end of pagination");
+    //         console.log("error");
+    //       }
+    //     )
+    //     .catch((error) => {
+    //       alert("Error :" + error);
+    //     });
+    // },
 
-    afficherEvenementsPublics() {
+    afficherEvenementsPublic() {
 
-      axios({
+      api({
         url: `http://localhost:8080/evenements/`,
         method: "GET",
       })
         .then(
           (response) => {
-            if (response.data) {
-              console.log("Il y a des évenements");
-              console.log(response.data.evenements[0].evenement.adresse);
+            this.listeEvenements = [];
+              if (response.data.evenements.length > 0) {
+                var count = 0;
+                console.log(response.data.evenements.length);
+                for (var i = 0;i < response.data.evenements.length;i++) {
+                  if(response.data.evenements[i].evenement.type == 0){
+                    this.listeEvenements[count] = response.data.evenements[i].evenement;
+                    count++;
+                    console.log(this.listeEvenements);
+                  }
+                       
+                }
+                this.trierEvenements();
+                //document.getElementById('cardsEvenement').style.display='flex';
 
-              for(var i=0; i<response.data.evenements.length; i++){
-                console.log(this.listeEvenements);
-              }
-
-              this.listeEvenements[i] = response.data.evenements;
-              console.log("-----"+this.listeEvenements);
-            } else {
-              console.log("Il y a pas des évenements");
-              this.listeEvenements = [];
-              document.getElementById("messageVideE").style.display = "block";
+                } else {
+                console.log("Il y a pas des évenements");
+                this.listeEvenements = [];
+                document.getElementById("messageVideE").style.display = "block";
             }
           },
           function(err) {
@@ -338,35 +346,35 @@ export default {
           }
         )
         .catch((error) => {
-          alert("Error :" + error);
         });
+
     },
 
-    unEvenement(id) {
-      axios
-        .get("http://localhost:8080/evenements/" + id)
-        .then((response) => {
-          console.log("AFFICHER UN EVENEMENT");
-          this.totalParticipants =
-            response.data.evenement[0].participants.count +
-            (this.totalParticipants =
-              response.data.evenement[0].participantsNonInscrits.count);
-          this.titreModal = response.data.evenement[0].titre;
-          this.descriptionModal = response.data.evenement[0].description;
-          this.dateModal = response.data.evenement[0].date;
-          this.heureModal = response.data.evenement[0].heure;
-          this.latitudeModal = response.data.evenement[0].latitude;
-          this.longitudeModal = response.data.evenement[0].longitude;
-          this.adresseModal = response.data.evenement[0].adresse;
-          this.codePostalModal = response.data.evenement[0].codePostal;
-          this.villeModal = response.data.evenement[0].ville;
-          this.paysModal = response.data.evenement[0].pays;
-          this.typeModal = response.data.evenement[0].type;
-        })
-        .catch((error) => {
-          console.log("Error ========>", error);
-        });
-    },
+    // unEvenement(id) {
+    //  axios
+    //     .get("http://localhost:8080/evenements/" + id)
+    //     .then((response) => {
+    //       console.log("AFFICHER UN EVENEMENT");
+    //       this.totalParticipants =
+    //         response.data.evenement[0].participants.count +
+    //         (this.totalParticipants =
+    //           response.data.evenement[0].participantsNonInscrits.count);
+    //       this.titreModal = response.data.evenement[0].titre;
+    //       this.descriptionModal = response.data.evenement[0].description;
+    //       this.dateModal = response.data.evenement[0].date;
+    //       this.heureModal = response.data.evenement[0].heure;
+    //       this.latitudeModal = response.data.evenement[0].latitude;
+    //       this.longitudeModal = response.data.evenement[0].longitude;
+    //       this.adresseModal = response.data.evenement[0].adresse;
+    //       this.codePostalModal = response.data.evenement[0].codePostal;
+    //       this.villeModal = response.data.evenement[0].ville;
+    //       this.paysModal = response.data.evenement[0].pays;
+    //       this.typeModal = response.data.evenement[0].type;
+    //     })
+    //     .catch((error) => {
+    //       console.log("Error ========>", error);
+    //     });
+    // },
 
     seDeconnecter() {
       this.$store.commit("setMembre", "");

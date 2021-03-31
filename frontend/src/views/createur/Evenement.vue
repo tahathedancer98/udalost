@@ -74,20 +74,24 @@
         class="ui stackable two column grid"
         style="margin:0px !important; width:100%; padding:0px !important; padding-left:8.2%; padding-right:8.2%; margin-bottom:3%;"
       >
-        <div
-          class="ui search column"
-          style="margin:0px !important; float:right; width:83%; padding:0px !important; margin-right:2%"
-        >
-          <div class="ui icon input" id="chercheur">
-            <input
-              class="prompt"
-              type="text"
-              placeholder="Rechercher évenement..."
-            />
-            <i class="search icon"></i>
+        <div class="ui search column" style="margin:0px !important; float:right; width:100%; padding:0px !important;">
+            <div class="recherche">
+              <div>
+                <input type="radio" id="rechercheTitre" name="recherche" value="titre" checked @click='changerTextDeRecherche();'>
+                <label for="rechercheTitre">Titre</label>
+                <input type="radio" id="rechercheVille" name="recherche" value="ville" @click='changerTextDeRecherche();'>
+                <label for="rechercheVille">Ville</label>
+                <input type="radio" id="recherchePays" name="recherche" value="pays" @click='changerTextDeRecherche();'>
+                <label for="recherchePays">Pays</label>
+               
+                <button @click="afficherEvenement();"><i class="">Afficher tous les évenements</i></button>
+              </div>
+            </div> 
+                <div class="ui icon input" id="chercheur">
+                  <input id="textDeRecherche" class="prompt" type="text" placeholder="Rechercher un évenement par titre..."/>
+                  <button @click="rechercher();"><i class="search icon"></i></button>
+                </div>
           </div>
-          <div class="results"></div>
-        </div>
 
         <div
           class="ui small basic icon buttons column ui stackable three column grid"
@@ -119,7 +123,7 @@
           href="#visualiserEvenement-modal"
           class="card column"
           id="cardDiv"
-          v-for="(ev, i) in listeEvenements"
+          v-for="(ev, i) in this.listeEvenements"
         >
           <div style="color:black;" @click="unEvenement(ev.id)">
             <div class="image" id="imageCard">
@@ -605,7 +609,60 @@ export default {
           alert("Error :" + error);
         });
     },
+    rechercher(){
+      var textSaisie = document.getElementById('textDeRecherche');
+      
+      var results = [];
+      var condition=null;
+      if(textSaisie.value == ''){
+        alert('veuillez remplir le champ de text pour rechercher !');
+      }else{
+        this.eventRecherche = [];
 
+        document.getElementById('cardsEvenement').style.display='none';
+        document.getElementById('cardsEvenementRecherche').style.display='none';
+        document.getElementById('cardsEvenementRechercheNonTrouvee').style.display='none';
+
+        console.log('great!');
+        if(document.getElementById('rechercheTitre').checked){
+
+          for(var event of this.listeEvenements){
+            if(event.titre == textSaisie.value){
+              this.eventRecherche = event;
+              console.log(this.eventRecherche);
+              condition=true;
+            }
+          }
+          
+        }else if(document.getElementById('rechercheVille').checked){
+
+          for(var event of this.listeEvenements){
+            if(event.ville == textSaisie.value){
+              this.eventRecherche = event;
+              condition=true;
+              console.log(this.eventRecherche);
+            }
+          }
+
+        }else if(document.getElementById('recherchePays').checked){
+
+          for(var event of this.listeEvenements){
+            if(event.email == textSaisie.value){
+              this.eventRecherche = event;
+              condition=true;
+              console.log(this.eventRecherche);
+            }
+          }
+        }
+        if(condition == true){
+          document.getElementById('cardsEvenementRecherche').style.display='flex';
+          document.getElementById('cardsEvenementRechercheNonTrouvee').style.display ='none';
+        }else{
+          document.getElementById('cardsEvenementRecherche').style.display='none';
+          document.getElementById('cardsEvenementRechercheNonTrouvee').style.display ='flex';
+        }
+      }
+    },
     unEvenement(id) {
       api
         .get("http://localhost:8080/evenements/" + id)
