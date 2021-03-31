@@ -1,21 +1,24 @@
 <?php
+use udalost\webapp\errors\BadUri;
+use udalost\webapp\errors\NotAllowed;
+use udalost\webapp\errors\Internal;
 
 return [
     'notFoundHandler' => function($c){
         return function($rq, $rs) use ($c){
-            return \lbs\commande\api\errors\BadUri::error($c,$rq,$rs);
+            return BadUri::error($c,$rq,$rs);
         };
     },
 
     'notAllowedHandler' => function($c){
         return function($rq, $rs, $methods) use ($c){
-            return \lbs\commande\api\errors\NotAllowed::error($c,$rq,$rs,$methods);
+            return NotAllowed::error($c,$rq,$rs,$methods);
         };
     },
 
     'phpErrorHandler' => function($c){
         return function($rq, $rs, $error) use ($c){
-            return \lbs\commande\api\errors\Internal::error($c,$rq,$rs,$error);
+            return Internal::error($c,$rq,$rs,$error);
         };
     }
 

@@ -1,7 +1,6 @@
 <?php
 
-
-namespace udalost\backoffice\connection;
+namespace udalost\webapp\connection;
 
 use \Illuminate\Database\Capsule\Manager;
 
