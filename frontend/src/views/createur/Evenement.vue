@@ -56,8 +56,7 @@
 
     <div
       class="ui secondary pointing menu ui stackable three column grid"
-      id="submenu"
-    >
+      id="submenu">
       <a class="active item column" @click="evenement">
         Mes évenements
       </a>
@@ -74,24 +73,20 @@
         class="ui stackable two column grid"
         style="margin:0px !important; width:100%; padding:0px !important; padding-left:8.2%; padding-right:8.2%; margin-bottom:3%;"
       >
-        <div class="ui search column" style="margin:0px !important; float:right; width:100%; padding:0px !important;">
-            <div class="recherche">
-              <div>
-                <input type="radio" id="rechercheTitre" name="recherche" value="titre" checked @click='changerTextDeRecherche();'>
-                <label for="rechercheTitre">Titre</label>
-                <input type="radio" id="rechercheVille" name="recherche" value="ville" @click='changerTextDeRecherche();'>
-                <label for="rechercheVille">Ville</label>
-                <input type="radio" id="recherchePays" name="recherche" value="pays" @click='changerTextDeRecherche();'>
-                <label for="recherchePays">Pays</label>
-               
-                <button @click="afficherEvenement();"><i class="">Afficher tous les évenements</i></button>
-              </div>
-            </div> 
-                <div class="ui icon input" id="chercheur">
-                  <input id="textDeRecherche" class="prompt" type="text" placeholder="Rechercher un évenement par titre..."/>
-                  <button @click="rechercher();"><i class="search icon"></i></button>
-                </div>
+        <div
+          class="ui search column"
+          style="margin:0px !important; float:right; width:83%; padding:0px !important; margin-right:2%"
+        >
+          <div class="ui icon input" id="chercheur">
+            <input
+              class="prompt"
+              type="text"
+              placeholder="Rechercher évenement..."
+            />
+            <i class="search icon"></i>
           </div>
+          <div class="results"></div>
+        </div>
 
         <div
           class="ui small basic icon buttons column ui stackable three column grid"
@@ -123,7 +118,7 @@
           href="#visualiserEvenement-modal"
           class="card column"
           id="cardDiv"
-          v-for="(ev, i) in this.listeEvenements"
+          v-for="(ev, i) in listeEvenements"
         >
           <div style="color:black;" @click="unEvenement(ev.id)">
             <div class="image" id="imageCard">
@@ -158,7 +153,7 @@
           <div class="title">
             <span>CRÉER ÉVENEMENT</span>
           </div>
-          <form class="ui form" @submit.prevent="creerEvenement">
+          <form class="ui form" @submit.prevent="geoMap">
             <h5
               style="
 								margin-top: 0%;
@@ -247,7 +242,7 @@
             <i class="reply icon"></i> Retourner
           </a>
           <div class="title">
-            <span>GÉOLOCALISATION DE "RENDEZ-VOUS STAGES"</span>
+            <span>GÉOLOCALISATION DE "{{ titreModal }}"</span>
           </div>
           <form>
             <div id="map-example-container"></div>
@@ -261,7 +256,7 @@
             </div>
           </form>
         </div>
-        <a href="#" class="modal__close">&times;</a>
+        <a @click="reload" href="#" class="modal__close">&times;</a>
       </div>
       <div id="popup-overlay"></div>
     </div>
@@ -270,10 +265,12 @@
       <div class="modal__contentVisualiserEv">
         <div class="form">
           <div class="title">
-            <span>ÉVENEMENT "RENDEZ-VOUS STAGES"</span>
+            <span>ÉVENEMENT "{{ titreModal }}"</span>
           </div>
 
-          <form class="ui form"  @submit.prevent="modifierEvenement">
+          <button hidden="hidden" id="link">{{ link }}</button>
+
+          <form class="ui form" @submit.prevent="modifierEvenement">
             <div
               class="ui small basic icon buttons column ui stackable four column grid"
               style="margin:0px !important; float:right; width:50%; padding:0px !important;"
@@ -283,15 +280,18 @@
                 <i class="large purple users alternate icon"></i>
                 {{ totalParticipants }} participants
               </a>
-              <a class="ui button column">
+              <a class="ui button column" @click="copierURL">
                 <i class="large green share icon"></i> Partager
+                <div id="messageCopie">
+                  <span><i class="check icon"></i>Lien copié !</span>
+                </div>
               </a>
               <a class="ui button column" href="#geolocaliser-modal">
                 <i class="large orange map marker alternate icon"></i>
                 Géolocaliser
               </a>
-              <a class="ui button column">
-                <i class="large red trash alternate icon"></i>
+              <a class="ui button column" v-for="(ev, i) in listeEvenements">
+                <i class="large red trash alternate icon" @click="suppEvenement(ev.id)"></i>
                 Supprimer
               </a>
             </div>
@@ -373,11 +373,9 @@
 </template>
 
 <script>
-import HelloWorld from "@/components/HelloWorld.vue";
 import axios from "axios";
 
 export default {
-  name: "Home",
   data() {
     return {
       typeE: [
@@ -410,20 +408,286 @@ export default {
       paysModal: "",
       typeModal: "",
       totalParticipants: "",
-      idEvenement : "",
+      idEvenement: "",
+      link: "",
+      lon: "",
+      lat: "",
       id: this.$store.state.membre.utilisateur.id,
       token: this.$store.state.membre.token,
     };
   },
   components: {
-    HelloWorld,
-  },
+   },
   mounted() {
     this.afficherEvenementsUser();
-    (function() {
+  },
+  methods: {
+    copierURL() {
+      var aux = document.createElement("input");
+      aux.setAttribute("value", document.getElementById("link").innerHTML);
+      document.body.appendChild(aux);
+      aux.select();
+      document.execCommand("copy");
+      document.body.removeChild(aux);
+      this.messageTime();
+    },
+
+    messageTime() {
+      document.getElementById("messageCopie").style.display = "block";
+      setTimeout(function() {
+        document.getElementById("messageCopie").style.display = "none";
+      }, 1500);
+    },
+
+    geoMap() {
+      var adresse =
+        this.adresse +
+        ", " +
+        this.ville +
+        ", " +
+        this.pays +
+        ", " +
+        this.codePostal;
+
+      const params = {
+        address: adresse,
+        sensor: false,
+        key: "fc0786cbe56423b6ad6be200da5fdda1",
+      };
+
+      map
+        .get("api/geocoding/", { params })
+        .then((response) => {
+          var lon,
+            lat = "";
+          lon = response.data.results[0].geometry.location.lng;
+          lat = response.data.results[0].geometry.location.lat;
+          console.log(lon);
+          console.log(lat);
+          this.creerEvenement(lat, lon);
+        })
+        .catch((error) => {
+          console.log("Error with maps========>", error);
+        });
+    },
+
+    creerEvenement(lat, lon) {
+      const config = {
+        headers: { Authorization: `Bearer ${this.token}` },
+      };
+
+      axios
+        .post(
+          "http://localhost:8080/evenements/",
+          {
+            titre: this.titre,
+            description: this.description,
+            date: this.date,
+            heure: this.heure,
+            latitude: lat,
+            longitude: lon,
+            adresse: this.adresse,
+            codePostal: this.codePostal,
+            ville: this.ville,
+            pays: this.pays,
+            type: this.type,
+          },
+          config
+        )
+        .then((response) => {
+          this.rejoindreEvenement(response.data.evenements.id);
+          this.$router.push("/successev");
+        })
+        .catch((error) => {
+          this.$router.push("/errorev");
+          console.log("Error ========>", error);
+        });
+    },
+
+    rejoindreEvenement(id) {
+      const config = {
+        headers: { Authorization: `Bearer ${this.token}` },
+      };
+      axios
+        .put(
+          "http://localhost:8080/evenements/" + id + "/rejoindre",
+          {
+            nom: "",
+            status: "2",
+            message: "Bonjour, je suis le createur",
+          },
+          config
+        )
+        .then((response) => {})
+        .catch((error) => {
+          console.log("Error ========>", error);
+        });
+    },
+
+    afficherEvenementsUser() {
+      api({
+        url: `http://localhost:8080/utilisateurs/` + this.id,
+        method: "GET",
+      })
+        .then(
+          (response) => {
+            if (response.data.utilisateur[0].evenementsCrees[0].length > 0) {
+              //response.data.utilisateur[0].evenementsCrees[0][0].evenementCree
+              this.listeEvenements =
+                response.data.utilisateur[0].evenementsCrees[0];
+              for (
+                var i = 0;
+                i < response.data.utilisateur[0].evenementsCrees[0].length;
+                i++
+              ) {
+                console.log(
+                  response.data.utilisateur[0].evenementsCrees[0][i]
+                    .evenementCree
+                );
+                this.listeEvenements[i] =
+                  response.data.utilisateur[0].evenementsCrees[0][
+                    i
+                  ].evenementCree;
+              }
+            } else {
+              this.listeEvenements = [];
+              document.getElementById("messageVideE").style.display = "block";
+            }
+          },
+          function(err) {
+            //throw new Error("end of pagination");
+            console.log("error");
+          }
+        )
+        .catch((error) => {
+          alert("Error :" + error);
+        });
+    },
+
+    unEvenement(id) {
+      api
+        .get("http://localhost:8080/evenements/" + id)
+        .then((response) => {
+          this.totalParticipants =
+            response.data.evenement[0].participants.count +
+            (this.totalParticipants =
+              response.data.evenement[0].participantsNonInscrits.count);
+          this.titreModal = response.data.evenement[0].titre;
+          this.descriptionModal = response.data.evenement[0].description;
+          this.dateModal = response.data.evenement[0].date;
+          this.heureModal = response.data.evenement[0].heure;
+          this.latitudeModal = response.data.evenement[0].latitude;
+          this.longitudeModal = response.data.evenement[0].longitude;
+          this.adresseModal = response.data.evenement[0].adresse;
+          this.codePostalModal = response.data.evenement[0].codePostal;
+          this.villeModal = response.data.evenement[0].ville;
+          this.paysModal = response.data.evenement[0].pays;
+          this.typeModal = response.data.evenement[0].type;
+
+          this.idEvenement = id;
+
+          this.geolocation(
+            response.data.evenement[0].latitude,
+            response.data.evenement[0].longitude
+          );
+
+          this.link =
+            "http://localhost:8080/invitationevenement/" + this.idEvenement;
+        })
+        .catch((error) => {
+          console.log("Error ========>", error);
+        });
+    },
+
+    modifierEvenement(id) {
+      if (this.motpasse == this.motpassev) {
+        const config = {
+          headers: { Authorization: `Bearer ${this.token}` },
+        };
+        axios
+          .put(
+            "http://localhost:8080/evenements/" + this.idEvenement,
+            {
+              titre: this.titreModal,
+              description: this.descriptionModal,
+              date: this.dateModal,
+              heure: this.heureModal,
+              latitude: "222.31",
+              longitude: "133.2",
+              adresse: this.adresseModal,
+              codePostal: this.codePostalModal,
+              ville: this.villeModal,
+              pays: this.paysModal,
+              type: this.typeModal,
+            },
+            config
+          )
+          .then((response) => {
+            this.$router.push("/successme");
+          })
+          .catch((error) => {
+            this.$router.push("/errorme");
+            console.log("Error ========>", error);
+          });
+      } else { 
+          }
+    },
+     
+    suppEvenement(id) {
+      console.log('ouhou')
+      if(confirm('Voulez-vous supprimer cet événement ?')) {
+        api({
+          url: `http://localhost:8080/evenements/` + id,
+          method: "DELETE",
+        })
+          .then((response) => {
+            console.log("L'évenement est bien supprimé");
+            location.reload();
+          })
+          .catch((error) => {
+            console.log("Error ========>", error);
+          });
+      }
+    },
+
+    seDeconnecter() {
+      this.$store.commit("setMembre", "");
+      this.$router.push("/");
+    },
+
+    accueil() {
+      this.$router.push("/home");
+    },
+
+    evenement() {
+      this.$router.push("/evenement");
+    },
+
+    profil() {
+      this.$router.push("/profil");
+    },
+
+    invitation() {
+      this.$router.push("/invitation");
+    },
+
+    evenementPublic() {
+      this.$router.push("/evenementPublic");
+    },
+
+    participant() {
+      this.$router.push("/participant");
+    },
+
+    afficherEvenement() {},
+
+    geolocation(lat, lon) {
+
+      console.log(lat);
+      console.log(lon);
       var latlng = {
-        lat: 48.8566,
-        lng: 2.34287,
+        lng: lon,
+        lat: lat,
       };
 
       var placesAutocomplete = places({
@@ -436,25 +700,37 @@ export default {
         type: "address",
       });
 
-      var map = L.map("map-example-container", {
-        scrollWheelZoom: false,
-        zoomControl: false,
-      });
+      var map = "";
+
+      if (!map) {
+        map = new L.map("map-example-container", {
+          center: [latlng.lat, latlng.lng],
+          zoom: 5,
+          renderer: L.canvas(),
+          attributionControl: true,
+        });
+      }
+
+      map.setView(new L.LatLng(latlng.lat, latlng.lng), 16);
 
       var osmLayer = new L.TileLayer(
         "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
         {
           minZoom: 1,
-          maxZoom: 13,
+          maxZoom: 17,
           attribution:
             'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
         }
       );
 
       var markers = [];
-
-      map.setView(new L.LatLng(latlng.lat, latlng.lng), 12);
+      var markerslat = [];
       map.addLayer(osmLayer);
+
+      var markerlat = L.marker(latlng, { opacity: 1 });
+      markerlat.bindPopup("<h3>Votre événement est là</h3>");
+      markerlat.addTo(map);
+      markerslat.push(markerlat);
 
       placesAutocomplete.on("suggestions", handleOnSuggestions);
       placesAutocomplete.on("cursorchanged", handleOnCursorchanged);
@@ -466,7 +742,7 @@ export default {
         markers = [];
 
         if (e.suggestions.length === 0) {
-          map.setView(new L.LatLng(latlng.lat, latlng.lng), 12);
+          map.setView(new L.LatLng(latlng.lat, latlng.lng), 16);
           return;
         }
 
@@ -505,6 +781,10 @@ export default {
 
       function addMarker(suggestion) {
         var marker = L.marker(suggestion.latlng, { opacity: 0.4 });
+        console.log("suggestion");
+        marker.bindPopup(
+          "<h4>Nouvelle adresse de votre événement</h4><br><span>Les modifications seront prises en compte lorsque vous cliquez sur 'Accepter'.</span>"
+        );
         marker.addTo(map);
         markers.push(marker);
       }
@@ -517,245 +797,18 @@ export default {
         var featureGroup = L.featureGroup(markers);
         map.fitBounds(featureGroup.getBounds().pad(0.5), { animate: true });
       }
-    })();
-  },
-  methods: {
-    creerEvenement() {
-      const config = {
-        headers: { Authorization: `Bearer ${this.token}` },
-      };
-      axios
-        .post(
-          "http://localhost:8080/evenements/",
-          {
-            titre: this.titre,
-            description: this.description,
-            date: this.date,
-            heure: this.heure,
-            latitude: "134.4",
-            longitude: "34.2",
-            adresse: this.adresse,
-            codePostal: this.codePostal,
-            ville: this.ville,
-            pays: this.pays,
-            type: this.type,
-          },
-          config
-        )
-        .then((response) => {
-          this.rejoindreEvenement(response.data.evenements.id);
-          this.$router.push("/successev");
-        })
-        .catch((error) => {
-          this.$router.push("/errorev");
-          console.log("Error ========>", error);
-        });
     },
 
-    rejoindreEvenement(id) {
-      const config = {
-        headers: { Authorization: `Bearer ${this.token}` },
-      };
-      axios
-        .put(
-          "http://localhost:8080/evenements/" + id + "/rejoindre",
-          {
-            nom: "",
-            status: "2",
-            message: "Bonjour, je suis le createur",
-          },
-          config
-        )
-        .then((response) => {
-          console.log("REJOINDRE EVENEMENT");
-          console.log(response.data);
-        })
-        .catch((error) => {
-          console.log("Error ========>", error);
-        });
-    },
-
-    afficherEvenementsUser() {
-
-      api({
-        url: `http://localhost:8080/utilisateurs/` + this.id,
-        method: "GET",
-      })
-        .then(
-          (response) => {
-            if (response.data.utilisateur[0].evenementsCrees[0].length > 0) {
-              console.log("Il y a des évenements");
-              //response.data.utilisateur[0].evenementsCrees[0][0].evenementCree
-              this.listeEvenements =
-                response.data.utilisateur[0].evenementsCrees[0];
-              for (var i = 0;i < response.data.utilisateur[0].evenementsCrees[0].length;i++) {
-                this.listeEvenements[i] =response.data.utilisateur[0].evenementsCrees[0][i].evenementCree;
-                console.log("adentro "+this.listeEvenements);
-              }
-
-               console.log("afuera "+this.listeEvenements);
-            } else {
-              console.log("Il y a pas des évenements");
-              this.listeEvenements = [];
-              document.getElementById("messageVideE").style.display = "block";
-            }
-          },
-          function(err) {
-            //throw new Error("end of pagination");
-            console.log("error");
-          }
-        )
-        .catch((error) => {
-          alert("Error :" + error);
-        });
-    },
-    rechercher(){
-      var textSaisie = document.getElementById('textDeRecherche');
-      
-      var results = [];
-      var condition=null;
-      if(textSaisie.value == ''){
-        alert('veuillez remplir le champ de text pour rechercher !');
-      }else{
-        this.eventRecherche = [];
-
-        document.getElementById('cardsEvenement').style.display='none';
-        document.getElementById('cardsEvenementRecherche').style.display='none';
-        document.getElementById('cardsEvenementRechercheNonTrouvee').style.display='none';
-
-        console.log('great!');
-        if(document.getElementById('rechercheTitre').checked){
-
-          for(var event of this.listeEvenements){
-            if(event.titre == textSaisie.value){
-              this.eventRecherche = event;
-              console.log(this.eventRecherche);
-              condition=true;
-            }
-          }
-          
-        }else if(document.getElementById('rechercheVille').checked){
-
-          for(var event of this.listeEvenements){
-            if(event.ville == textSaisie.value){
-              this.eventRecherche = event;
-              condition=true;
-              console.log(this.eventRecherche);
-            }
-          }
-
-        }else if(document.getElementById('recherchePays').checked){
-
-          for(var event of this.listeEvenements){
-            if(event.email == textSaisie.value){
-              this.eventRecherche = event;
-              condition=true;
-              console.log(this.eventRecherche);
-            }
-          }
-        }
-        if(condition == true){
-          document.getElementById('cardsEvenementRecherche').style.display='flex';
-          document.getElementById('cardsEvenementRechercheNonTrouvee').style.display ='none';
-        }else{
-          document.getElementById('cardsEvenementRecherche').style.display='none';
-          document.getElementById('cardsEvenementRechercheNonTrouvee').style.display ='flex';
-        }
+    reload() {
+      //location.reload();
+      //this.$router.push("/home");
+      var container = L.DomUtil.get("map-example-container");
+      if (container != null) {
+        //container.outerHTML = ""; // Clear map generated HTML
+        container._leaflet_id = null;
+        //L.map("map-example-container");
       }
     },
-    unEvenement(id) {
-      api
-        .get("http://localhost:8080/evenements/" + id)
-        .then((response) => {
-          console.log("AFFICHER UN EVENEMENT");
-          this.totalParticipants =
-            response.data.evenement[0].participants.count +
-            (this.totalParticipants =
-              response.data.evenement[0].participantsNonInscrits.count);
-          this.titreModal = response.data.evenement[0].titre;
-          this.descriptionModal = response.data.evenement[0].description;
-          this.dateModal = response.data.evenement[0].date;
-          this.heureModal = response.data.evenement[0].heure;
-          this.latitudeModal = response.data.evenement[0].latitude;
-          this.longitudeModal = response.data.evenement[0].longitude;
-          this.adresseModal = response.data.evenement[0].adresse;
-          this.codePostalModal = response.data.evenement[0].codePostal;
-          this.villeModal = response.data.evenement[0].ville;
-          this.paysModal = response.data.evenement[0].pays;
-          this.typeModal = response.data.evenement[0].type;
-
-          this.idEvenement = id;
-        })
-        .catch((error) => {
-          console.log("Error ========>", error);
-        });
-    },
-    
-    modifierEvenement(id) {
-      if (this.motpasse == this.motpassev) {
-        const config = {
-          headers: { Authorization: `Bearer ${this.token}` },
-        };
-        axios
-          .put(
-            "http://localhost:8080/evenements/" + this.idEvenement,
-            {
-            titre: this.titreModal,
-            description: this.descriptionModal,
-            date: this.dateModal,
-            heure: this.heureModal,
-            latitude: "222.31",
-            longitude: "133.2",
-            adresse: this.adresseModal,
-            codePostal: this.codePostalModal,
-            ville: this.villeModal,
-            pays: this.paysModal,
-            type: this.typeModal,
-            },
-            config
-          )
-          .then((response) => {
-            console.log(response.data);
-            this.$router.push("/successme");
-          })
-          .catch((error) => {
-            this.$router.push("/errorme");
-            console.log("Error ========>", error);
-          });
-      } else {
-        document.getElementById('messageError').style.display = "block";
-      }
-    },
-    seDeconnecter() {
-      this.$store.commit("setMembre", "");
-      this.$router.push("/");
-    },
-
-    accueil() {
-      this.$router.push("/home");
-    },
-
-    evenement() {
-      this.$router.push("/evenement");
-    },
-
-    profil() {
-      this.$router.push("/profil");
-    },
-
-    invitation() {
-      this.$router.push("/invitation");
-    },
-
-    evenementPublic() {
-      this.$router.push("/evenementPublic");
-    },
-
-    participant() {
-      this.$router.push("/participant");
-    },
-
-    afficherEvenement() {},
   },
 };
 </script>
@@ -779,6 +832,14 @@ export default {
   font-size: 1.2em;
   display: none;
   color: rgb(126, 4, 4);
+}
+
+#messageCopie {
+  text-align: center;
+  font-size: 1.2em;
+  display: none;
+  margin-top: 1%;
+  color: green;
 }
 
 a {

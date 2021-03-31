@@ -71,27 +71,24 @@
 
     <div id="wrapper">
       <div
-          class="ui stackable two column grid"
-          style="margin:0px !important; width:100%; padding:0px !important; padding-left:8.2%; padding-right:8.2%; margin-bottom:3%;"
+        class="ui stackable two column grid"
+        style="margin:0px !important; width:100%; padding:0px !important; padding-left:8.2%; padding-right:8.2%; margin-bottom:3%;"
+      >
+        <div
+          class="ui search column"
+          style="margin:0px !important; float:right; width:100%; padding:0px !important;"
         >
-          <div class="ui search column" style="margin:0px !important; float:right; width:100%; padding:0px !important;">
-            <div class="recherche">
-              <div>
-                <input type="radio" id="rechercheTitre" name="recherche" value="titre" checked @click='changerTextDeRecherche();'>
-                <label for="rechercheTitre">Titre</label>
-                <input type="radio" id="rechercheVille" name="recherche" value="ville" @click='changerTextDeRecherche();'>
-                <label for="rechercheVille">Ville</label>
-                <input type="radio" id="recherchePays" name="recherche" value="pays" @click='changerTextDeRecherche();'>
-                <label for="recherchePays">Pays</label>
-                <button @click="rechercher();"><i class="search icon"></i></button>
-                <button @click="afficherEvenement();"><i class="">Afficher tous les évenements</i></button>
-              </div>
-            </div> 
-                <div class="ui icon input" id="chercheur">
-                  <input id="textDeRecherche" class="prompt" type="text" placeholder="Rechercher un évenement par titre..."/>
-                </div>
+          <div class="ui icon input" id="chercheur">
+            <input
+              class="prompt"
+              type="text"
+              placeholder="Rechercher évenement..."
+            />
+            <i class="search icon"></i>
           </div>
+          <div class="results"></div>
         </div>
+      </div>
       <!--TABLE-->
      <div id="messageVideE">
         <span
@@ -109,12 +106,12 @@
           id="cardDiv"
           v-for="(ev, i) in this.listeEvenements"
         >
-          <div style="color:black; ">  <!-- "@click="unEvenement(ev.id)" -->          
+          <div style="color:black;" @click="unEvenement(ev.id)">         
             <div class="image" id="imageCard">
               <img src="../../assets/images/iconCalendar.png" />
             </div>
             <div class="content">
-              <div class="header">Titre : {{ ev.titre }}</div>
+              <div class="header">{{ev.titre}}</div>
               <div class="meta">
                 <a
                   >{{ ev.adresse }} {{ ev.codePostal }} {{ ev.ville }}
@@ -140,7 +137,7 @@
       <div class="modal__contentVisualiserEv">
         <div class="form">
           <div class="title">
-            <span>ÉVENEMENT "RENDEZ-VOUS STAGES"</span>
+            <span>ÉVENEMENT "{{ titreModal }}"</span>
           </div>
 
           <form class="ui form">
@@ -150,21 +147,21 @@
               id="iconsModal"
             >
               <a class="ui button column">
-                État : Participant
+                État : En attente
                 <i class="green check icon"></i>
               </a>
             </div>
             <div class="field">
               <div class="field">
                 <label><i class="quote left icon"></i>Titre</label>
-                <input type="text" name="" readonly="readonly" />
+                <input type="text" name="" v-model="titreModal" readonly="readonly" />
               </div>
             </div>
 
             <div class="field">
               <div class="field">
                 <label><i class="align justify icon"></i>Description</label>
-                <textarea rows="2" readonly="readonly"></textarea>
+                <textarea rows="2"  v-model="descriptionModal" readonly="readonly"></textarea>
               </div>
             </div>
 
@@ -172,11 +169,11 @@
               <div class="fields">
                 <div class="twelve wide field">
                   <label><i class="calendar alternate icon"></i>Date</label>
-                  <input type="date" readonly="readonly" />
+                  <input type="date"  v-model="dateModal" readonly="readonly" />
                 </div>
                 <div class="four wide field">
                   <label><i class="clock icon"></i>Heure</label>
-                  <input type="time" name="" readonly="readonly" />
+                  <input type="time" name=""  v-model="heureModal" readonly="readonly" />
                 </div>
               </div>
             </div>
@@ -184,22 +181,22 @@
             <div class="field">
               <div class="field">
                 <label><i class="map marker alternate icon"></i>Adresse</label>
-                <input type="text" readonly="readonly" />
+                <input type="text"  v-model="adresseModal" readonly="readonly" />
               </div>
             </div>
 
             <div class="three fields">
               <div class="field">
                 <label><i class="address book icon"></i>Code postal</label>
-                <input type="text" name="" readonly="readonly" />
+                <input type="text" name="" v-model="codePostalModal" readonly="readonly" />
               </div>
               <div class="field">
                 <label><i class="building icon"></i>Ville</label>
-                <input type="text" name="" readonly="readonly" />
+                <input type="text" name="" v-model="villeModal" readonly="readonly" />
               </div>
               <div class="field">
                 <label><i class="flag icon"></i>Pays</label>
-                <input type="text" name="" readonly="readonly" />
+                <input type="text" name="" v-model="paysModal" readonly="readonly" />
               </div>
             </div>
             <div class="two fields" id="buttonOptions">
@@ -237,6 +234,40 @@ export default {
   data() {
     return {
       listeEvenements: [],
+      typeE: [
+        { text: "Public", value: 0 },
+        { text: "Private", value: 1 },
+      ],
+      token: this.$store.state.membre.token,
+      titre: "",
+      description: "",
+      date: "",
+      heure: "",
+      latitude: "",
+      longitude: "",
+      adresse: "",
+      codePostal: "",
+      ville: "",
+      pays: "",
+      type: "",
+      participants: [],
+      titreModal: "",
+      descriptionModal: "",
+      dateModal: "",
+      heureModal: "",
+      latitudeModal: "",
+      longitudeModal: "",
+      adresseModal: "",
+      codePostalModal: "",
+      villeModal: "",
+      paysModal: "",
+      typeModal: "",
+      totalParticipants: "",
+      idEvenement: "",
+      link: "",
+      lon: "",
+      lat: "",
+      id: this.$store.state.membre.utilisateur.id,
     };
   },
 
@@ -272,45 +303,6 @@ export default {
     //     });
     // },
 
-    // afficherEvenementsUser() {
-
-    //   axios({
-    //     url: `http://localhost:8080/utilisateurs/` + this.id,
-    //     method: "GET",
-    //   })
-    //     .then(
-    //       (response) => {
-    //         if (response.data.utilisateur[0].evenementsCrees[0].length > 0) {
-    //           console.log("Il y a des évenements");
-    //           //response.data.utilisateur[0].evenementsCrees[0][0].evenementCree
-    //           this.listeEvenements =
-    //             response.data.utilisateur[0].evenementsCrees[0];
-    //           for (
-    //             var i = 0;
-    //             i < response.data.utilisateur[0].evenementsCrees[0].length;
-    //             i++
-    //           ) {
-    //             this.listeEvenements[i] =
-    //               response.data.utilisateur[0].evenementsCrees[0][
-    //                 i
-    //               ].evenementCree;
-    //           }
-    //         } else {
-    //           console.log("Il y a pas des évenements");
-    //           this.listeEvenements = [];
-    //           document.getElementById("messageVideE").style.display = "block";
-    //         }
-    //       },
-    //       function(err) {
-    //         //throw new Error("end of pagination");
-    //         console.log("error");
-    //       }
-    //     )
-    //     .catch((error) => {
-    //       alert("Error :" + error);
-    //     });
-    // },
-
     afficherEvenementsPublic() {
 
       api({
@@ -319,14 +311,15 @@ export default {
       })
         .then(
           (response) => {
+
             this.listeEvenements = [];
               if (response.data.evenements.length > 0) {
                 var count = 0;
-                console.log(response.data.evenements.length);
+              console.log(response.data.evenements.length);
                 for (var i = 0;i < response.data.evenements.length;i++) {
                   if(response.data.evenements[i].evenement.type == 0){
                     this.listeEvenements[count] = response.data.evenements[i].evenement;
-                    count++;
+                   count++;
                     console.log(this.listeEvenements);
                   }
                        
@@ -347,34 +340,37 @@ export default {
         )
         .catch((error) => {
         });
-
     },
 
-    // unEvenement(id) {
-    //  axios
-    //     .get("http://localhost:8080/evenements/" + id)
-    //     .then((response) => {
-    //       console.log("AFFICHER UN EVENEMENT");
-    //       this.totalParticipants =
-    //         response.data.evenement[0].participants.count +
-    //         (this.totalParticipants =
-    //           response.data.evenement[0].participantsNonInscrits.count);
-    //       this.titreModal = response.data.evenement[0].titre;
-    //       this.descriptionModal = response.data.evenement[0].description;
-    //       this.dateModal = response.data.evenement[0].date;
-    //       this.heureModal = response.data.evenement[0].heure;
-    //       this.latitudeModal = response.data.evenement[0].latitude;
-    //       this.longitudeModal = response.data.evenement[0].longitude;
-    //       this.adresseModal = response.data.evenement[0].adresse;
-    //       this.codePostalModal = response.data.evenement[0].codePostal;
-    //       this.villeModal = response.data.evenement[0].ville;
-    //       this.paysModal = response.data.evenement[0].pays;
-    //       this.typeModal = response.data.evenement[0].type;
-    //     })
-    //     .catch((error) => {
-    //       console.log("Error ========>", error);
-    //     });
-    // },
+    unEvenement(id) {
+      api
+        .get("http://localhost:8080/evenements/" + id)
+        .then((response) => {
+          this.totalParticipants =
+            response.data.evenement[0].participants.count +
+            (this.totalParticipants =
+              response.data.evenement[0].participantsNonInscrits.count);
+          this.titreModal = response.data.evenement[0].titre;
+          this.descriptionModal = response.data.evenement[0].description;
+          this.dateModal = response.data.evenement[0].date;
+          this.heureModal = response.data.evenement[0].heure;
+          this.latitudeModal = response.data.evenement[0].latitude;
+          this.longitudeModal = response.data.evenement[0].longitude;
+          this.adresseModal = response.data.evenement[0].adresse;
+          this.codePostalModal = response.data.evenement[0].codePostal;
+          this.villeModal = response.data.evenement[0].ville;
+          this.paysModal = response.data.evenement[0].pays;
+          this.typeModal = response.data.evenement[0].type;
+
+          this.idEvenement = id;
+
+          this.link =
+            "http://localhost:8080/invitationevenement/" + this.idEvenement;
+        })
+        .catch((error) => {
+          console.log("Error ========>", error);
+        });
+    },
 
     seDeconnecter() {
       this.$store.commit("setMembre", "");
