@@ -74,7 +74,7 @@
       </div>
       
       <div class="ui link cards stackable five column grid" id="cardsEvenement">
-        <a href="#visualiserEvenement-modal" class="card column"id="cardDiv" v-for="(ev, i) in this.listeEvenements">
+        <a class="card column"id="cardDiv" v-for="(ev, i) in this.listeEvenements">
           <div style="color:black;">
             <div id="iconB">
             <a>
@@ -121,7 +121,6 @@ export default {
       listeEvenements : []
     };
   },
-
   mounted() { 
    this.afficherEvenement();
   },
@@ -141,6 +140,9 @@ export default {
               for (var i = 0;i < response.data.evenements.length;i++) {
                 this.listeEvenements[i] = response.data.evenements[i].evenement;
               }
+
+              this.trierEvenements();
+
               console.log(this.listeEvenements);
             } else {
               console.log("Il y a pas des évenements");
@@ -157,70 +159,31 @@ export default {
           alert("Error :" + error);
         });
 
-      //AVANT
-
-    //   const data = new URLSearchParams();
-    //   data.append("grant_type", "client_credentials");
-
-    //  /* axios
-    //   .get('https://api.coindesk.com/v1/bpi/currentprice.json')
-    //   .then(response => (this.info = response))*/
-    //   axios({
-    //     url: `http://localhost:8080/evenements/`,
-    //     method: "GET",
-    //     withCredentials: true
-    //   })
-    //     .then(
-    //       (response) => {
-    //         for(var i=0; i < response.data.count; i++){ 
-    //           console.log('next');
-    //           this.listeEvenements[i] = response.data.evenements[i].evenement; 
-    //           console.log(response.data.evenements[i].evenement);
-              
-    //         };
-    //         /*while(i < response.data.evenements.length){
-              
-    //         }*/
-    //         // for(var i=0; i < response.data.evenements[1].length; i++){ 
-    //         //   
-    //         //     console.log(this.listeEvenements);*8/
-    //          //console.log(response.data.evenements);
-    //       /*if(response.data.evenements.length > 0){
-    //          /* console.log('1----'+this.listeEvenements);
-    //           console.log("Il y a des évenements");
-    //           response.data.utilisateur[0].evenementsCrees[0][0].evenementCree
-    //           this.listeEvenements = response.data.utilisateur[0].evenementsCrees[0];*/
-             
-             
-    //         //} 
-    //         /*else{
-    //           console.log("Il y a pas des évenements");
-    //           this.listeEvenements = [];
-    //           document.getElementById('messageVideE').style.display = "block";
-    //         }
-
-    //       },
-    //       function(err) {
-    //         //throw new Error("end of pagination");
-    //         console.log("error");
-    //         }*/
-    //       }
-    //     )
-    //     .catch((error) => {
-    //       alert("Error :" + error);
-    //     });
+    },
+    trierEvenements() {
+        this.listeEvenements.sort(function(a,b){
+          if ( a.date < b.date){
+              return -1;
+          }
+          if ( a.date > b.date){
+              return 1;
+          }
+          return 0;
+        });
     },
     suppEvenement(id) {
-      api
-        .delete("http://localhost:8080/evenements/" + id)
-        .then((response) => {
-          console.log("L'évenement est bien supprimé");
-          location.reload();
-          // this.$router.push("/gestionEvenement");
-        })
-        .catch((error) => {
-          console.log("Error ========>", error);
-        });
+      if(confirm('Voulez-vous supprimer cet événement ?')) {
+        api
+          .delete("http://localhost:8080/evenements/" + id)
+          .then((response) => {
+            console.log("L'évenement est bien supprimé");
+            location.reload();
+            // this.$router.push("/gestionEvenement");
+          })
+          .catch((error) => {
+            console.log("Error ========>", error);
+          });
+      }
     },
     seDeconnecter() {
       this.$router.push("/");

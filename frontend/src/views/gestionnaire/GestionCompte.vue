@@ -85,16 +85,12 @@
       <div class="search icon" @click="rechercher()"></div> -->
 
       <div class="ui link cards stackable five column grid" id="cardsEvenement">
-        <a href="#visualiserEvenement-modal" class="card column" id="cardDiv" v-for="(ev, i) in this.listUtilisateurs">
-          <div id="iconB">
-            <a>
-              <i class="large red trash alternate icon" @click="suppUtilisateur(ev.id)"></i>
-            </a>
-          </div>
+        <a id="cardDiv" class="card column" v-for="(ev, i) in this.listUtilisateurs">
+
           <div class="image" id="imageCard">
             <img src="../../assets/images/users.png" />
           </div>
-          <div class="content">
+            <div class="content">
               <div class="header">
                 {{ ev.nom }} {{ ev.prenom }}
               </div>
@@ -103,8 +99,11 @@
                   {{ ev.username }}
                 </a>
               </div>
-              <div class="mail">
-                {{ ev.mail }}
+              <div class="mail" id="divMail">
+                <div id="leMail">
+                  {{ ev.email }}
+                </div>
+                <button class='large red trash alternate icon' id='' @click="suppUtilisateur(ev.id);">SUPP</button>
               </div>
             </div>
             <div class="extra content" id="content">
@@ -116,56 +115,6 @@
       </div>
       <!--FIN TABLE-->
     </div>
-
-    <div id="visualiserEvenement-modal" class="modal">
-      <div class="modal__contentModal">
-        <div class="form">
-          <div class="title">
-            <span>ÉVENEMENT "RENDEZ-VOUS STAGES"</span>
-          </div>
-
-          <form class="ui form">
-            <div
-              class="ui small basic icon buttons column ui stackable one column grid"
-              style="margin:0px !important; float:right; width:15%; padding:0px !important;"
-              id="iconsModal"
-            >
-              <a class="ui button column">
-                <i class="large red trash alternate icon"></i>
-                Supprimer
-              </a>
-            </div>
-            <div class="field">
-            <div class="field">
-              <label><i class="address book icon"></i>Username</label>
-              <input type="text" name="" readonly="readonly" />
-            </div>
-          </div>
-
-          <div class="two fields">
-            <div class="field">
-              <label><i class="address card icon"></i>Nom</label>
-              <input type="text" name="" readonly="readonly"/>
-            </div>
-            <div class="field">
-              <label><i class="address card icon"></i>Prénom</label>
-              <input type="text" name="" readonly="readonly"/>
-            </div>
-          </div>
-
-          <div class="field">
-            <div class="field">
-              <label><i class="envelope icon"></i>Email</label>
-              <input type="email" readonly="readonly"/>
-            </div>
-          </div>
-          </form>
-        </div>
-        <a href="#" class="modal__close">&times;</a>
-      </div>
-      <div id="popup-overlay"></div>
-    </div>
-
     <div id="copyright" class="container">
       <p>
         &copy; IUT Nancy-Charlemagne. Tous droits réservés | Licence Pro 1
@@ -187,6 +136,13 @@ export default {
   },
   mounted() {
     this.afficherUtilisateurs();
+    // this.verifyAdmin();
+  },
+  computed:{
+    membreConnected() {
+      console.log(this.$store.state.admin.utilisateur.email);
+      return this.$store.state.admin.utilisateur.email == 'admin@admin.com'; 
+    }
   },
   methods: {
     afficherUtilisateurs(){
@@ -203,6 +159,7 @@ export default {
               for (var i = 0;i < response.data.utilisateurs.length;i++) {
                 this.listUtilisateurs[i] = response.data.utilisateurs[i].utilisateur;
               }
+              this.trierEvenements();
               console.log(this.listUtilisateurs);
             } else {
               console.log("Il y a pas d'utilisateur");
@@ -219,17 +176,43 @@ export default {
           alert("Error :" + error);
         });
     },
-    suppUtilisateur(id){
-      api
-        .delete("http://localhost:8080/utilisateurs/" + id)
-        .then((response) => {
-          console.log("L'utilisateur est bien supprimé");
-          location.reload();
-          // this.$router.push("/gestionEvenement");
-        })
-        .catch((error) => {
-          console.log("Error ========>", error);
+    trierEvenements() {
+        this.listUtilisateurs.sort(function(a,b){
+          if ( a.derniere_connexion < b.derniere_connexion){
+              return -1;
+          }
+          if ( a.derniere_connexion > b.derniere_connexion){
+              return 1;
+          }
+          return 0;
         });
+    },
+    verifyAdmin(){
+      // document.getElementById("divMail").innerHTML = "admin@admin.com";
+      console.log(document.getElementById('cardsEvenement'));
+      var doc = document.getElementById('cardsEvenement');
+      var test = document.getElementById('cardsEvenement').getElementsByClassName('mail');
+      console.log(test);
+      for(var i=0; i<doc.length ; i++){
+        console.log(test[i]);
+        if(test[i].innerHTML == 'admin@admin.com'){
+          document.getElementById('cardsEvenement')[i].style.display='none';
+          console.log(test[i]);
+        }
+      }
+    },
+    suppUtilisateur(id){
+      if(confirm('Voulez-vous supprimer cet utilisateur ?')) {
+        api
+          .delete("http://localhost:8080/utilisateurs/" + id)
+          .then((response) => {
+            console.log("L'utilisateur est bien supprimé");
+            location.reload();
+          })
+          .catch((error) => {
+            console.log("Error ========>", error);
+          });
+      }
     },
     rechercher(){
 
