@@ -32,7 +32,7 @@
 - Retournez dans la section <b>"Importer"</b>
 - Importez cette fois-ci les données de la base de données (<b>donnees_bd_udalost.sql</b>) qui sont toujours dans le même dossier <b>"sql"</b> et en appuyant à nouveau sur le bouton <b>exécuter</b> une fois importé
 
-9. L'installation est terminée, vous pouvez accéder aux API, à la base de données et le front-end dont voici les URL :
+9. L'installation est terminée, vous pouvez accéder aux API et à la base de données dont voici les URL :
 
 - <b>API back</b> : <a href="https://api.udalost.back:10043/">https://api.udalost.back:10043/</a>
 - <b>API web</b> : <a href="https://api.udalost.web:10243/">https://api.udalost.web:10243/</a>
