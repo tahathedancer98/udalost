@@ -470,6 +470,8 @@ class EventController {
   public function addComment(Request $rq, Response $rs, array $args) : Response {
     try{
         $id = $args['id'];
+
+
         $json_data = $rq->getParsedBody();
 
         $c = new Client(["base_uri" => $this->c->settings['url_udalost']]);
@@ -477,22 +479,30 @@ class EventController {
         $texte = $json_data["texte"];
         $lien = $json_data["lien"];
 
+        $participant = Participant::select()->where('id', '=', $id_participant)->get();
+        $evenement = Evenement::select()->where('id', '=', $id)->get();
 
         $getBody = json_decode($rq->getBody());
 
-        
+
         $commentaire = new Commentaire();
         $commentaire->id = Uuid::uuid4();
         $commentaire->id_participant = (filter_var($id_participant, FILTER_SANITIZE_NUMBER_INT));
         $commentaire->texte = (filter_var($texte, FILTER_SANITIZE_STRING));
         $commentaire->lien = (filter_var($lien, FILTER_SANITIZE_URL));
-        
+
         $commentaire->save();
-        
+
         $uri = $rq->getUri();
         $baseUrl = $uri->getBaseUrl();
-        
-        return Writer::json_output($rs, 201, ['commentaires'=>$commentaire->toArray()])
+
+        $data = [
+          'participant'=>$participant,
+          'commentaires'=>$commentaire->toArray(),
+          'evenement'=>$evenement->toArray()
+        ];
+
+        return Writer::json_output($rs, 201, $data)
             ->withHeader('Location', $baseUrl.$this->c['router']->pathFor('evenement', ['id'=>$id]));
 
     //Nous traitons les erreurs

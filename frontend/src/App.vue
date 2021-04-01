@@ -8,12 +8,25 @@ import axios from "axios";
 
 export default {
   mounted() {
-    // console.log("L'app est demarrée");
-    // if (this.$store.state.membre == null) {
-    //   this.$router.push("/");
-    // }else{
-    //   this.$router.push("/home");
-    // }
+    console.log("L'app est demarrée");
+
+    if (this.$store.state.membre == null || !this.$store.state.membre) {
+      if (
+        this.$store.state.invitation == null ||
+        !this.$store.state.invitation
+      ) {
+        this.$router.push("/");
+      }
+      /*if (
+        (this.$store.state.invitation != null ||
+        this.$store.state.invitation) && (this.$store.state.membre == null || !this.$store.state.membre)
+      ) {
+        this.$router.push("/home");
+      }*/
+    } /*else if (
+      this.$store.state.invitation == null) {
+      this.$router.push("/home");
+    }*/
 
     let token = this.$store.state.membre.token;
     if (token) {

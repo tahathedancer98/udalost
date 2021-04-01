@@ -58,18 +58,19 @@
       class="ui secondary pointing menu ui stackable three column grid"
       id="submenu"
     >
-      <a class="active item column" @click="evenement">
-        Mes évenements
+      <a class="active item column" @click="tous">
+        Tous
       </a>
-      <a class="item column" @click="invitation">
-        Mes invitations
+      <a class="item column" @click="participantAcepte">
+        Aceptés
       </a>
-      <a class="item column" @click="evenementPublic">
-        Évenements publics
+      <a class="item column" @click="participantRefuse">
+        Refusés
       </a>
     </div>
+    
 
-    <a class="ui button" id="retour" href="javascript: history.go(-1)"> 
+    <a class="ui button" id="retour" @click="retour">
       <i class="reply icon"></i> Retourner
     </a>
 
@@ -80,7 +81,7 @@
       >
         <div
           class="ui search column"
-          style="margin:0px !important; float:right; width:83%; padding:0px !important; margin-right:2%"
+          style="margin:0px !important; float:right; width:100%; padding:0px !important;"
         >
           <div class="ui icon input" id="chercheur">
             <input
@@ -92,16 +93,6 @@
           </div>
           <div class="results"></div>
         </div>
-
-        <div
-          class="ui small basic icon buttons column ui stackable three column grid"
-          style="margin:0px !important; float:right; width:15%; padding:0px !important;"
-          id="icons"
-        >
-          <a class="ui button column" id="fire-popup">
-            <i class="large calendar plus icon"></i> Ajouter participant
-          </a>
-        </div>
       </div>
       <!--TABLE-->
       <div
@@ -109,70 +100,16 @@
         id="cardsEvenement"
         @click="afficherEvenement"
       >
-        <a href="#visualiserEvenement-modal" class="card column" id="cardDiv">
+        <a href="#visualiserEvenement-modal" class="card column" id="cardDiv" v-for="(ev, i) in this.listeParticipants">
           <div class="image" id="imageCard">
             <img src="../../assets/images/users.png" />
           </div>
           <div class="content">
-            <div class="header">Julieta Guadalupe PINON SERATOS</div>
+            <div class="header">{{ev.nom}}</div>
           </div>
           <div class="extra content" id="content">
             <span>
-              Message : Les commentaires sont vraiment important est c'est pour
-              ca que j'écris la bon au revoir bla bla bla djfh Les commentaires
-              sont vraiment important est c'est pour ca que j'écris la bon au
-              revoir bla bla bla djfh
-            </span>
-          </div>
-        </a>
-
-        <a href="#visualiserEvenement-modal" class="card column" id="cardDiv">
-          <div class="image" id="imageCard">
-            <img src="../../assets/images/users.png" />
-          </div>
-          <div class="content">
-            <div class="header">Julieta Guadalupe PINON SERATOS</div>
-          </div>
-          <div class="extra content" id="content">
-            <span>
-              Message : Les commentaires sont vraiment important est c'est pour
-              ca que j'écris la bon au revoir bla bla bla djfh Les commentaires
-              sont vraiment important est c'est pour ca que j'écris la bon au
-              revoir bla bla bla djfh
-            </span>
-          </div>
-        </a>
-
-        <a href="#visualiserEvenement-modal" class="card column" id="cardDiv">
-          <div class="image" id="imageCard">
-            <img src="../../assets/images/users.png" />
-          </div>
-          <div class="content">
-            <div class="header">Julieta Guadalupe PINON SERATOS</div>
-          </div>
-          <div class="extra content" id="content">
-            <span>
-              Message : Les commentaires sont vraiment important est c'est pour
-              ca que j'écris la bon au revoir bla bla bla djfh Les commentaires
-              sont vraiment important est c'est pour ca que j'écris la bon au
-              revoir bla bla bla djfh
-            </span>
-          </div>
-        </a>
-
-        <a href="#visualiserEvenement-modal" class="card column" id="cardDiv">
-          <div class="image" id="imageCard">
-            <img src="../../assets/images/users.png" />
-          </div>
-          <div class="content">
-            <div class="header">Julieta Guadalupe PINON SERATOS</div>
-          </div>
-          <div class="extra content" id="content">
-            <span>
-              Message : Les commentaires sont vraiment important est c'est pour
-              ca que j'écris la bon au revoir bla bla bla djfh Les commentaires
-              sont vraiment important est c'est pour ca que j'écris la bon au
-              revoir bla bla bla djfh
+              {{ev.message}}
             </span>
           </div>
         </a>
@@ -190,20 +127,64 @@
 
 <script>
 import HelloWorld from "@/components/HelloWorld.vue";
+import axios from "axios";
 
 export default {
   name: "Home",
   data() {
-    return {};
+    return {
+      listeParticipants: []
+    };
   },
   components: {
     HelloWorld,
   },
-  mounted() {},
+  mounted() {
+    this.afficherParticipants();
+  },
   methods: {
     seDeconnecter() {
-      this.$store.commit('setMembre', '');
+      this.$store.commit("setMembre", "");
       this.$router.push("/");
+    },
+
+    afficherParticipants() {
+      axios({
+        url: `http://localhost:8080/participants/`,
+        method: "GET",
+      })
+        .then(
+          (response) => {
+            /*var count = 0;
+            for(var i=0; i<response.data.count; i++){
+              if(response.data.participants[i].utilisateur.id_evenement == this.$route.params.id){
+                this.listeParticipants[count] = response.data.participants[i];
+                this.listeParticipants = this.listeParticipants[i].utilisateur
+                console.log(this.listeParticipants[count]);
+                count++;               
+              }
+            }
+            console.log(this.listeParticipants);*/
+            this.listeParticipants = [];
+            if (response.data.participants.length > 0) {
+              var count = 0;
+              for (var i = 0;i < response.data.participants.length;i++) {
+                if(response.data.participants[i].utilisateur.id_evenement == this.$route.params.id){
+                  
+                this.listeParticipants[count] = response.data.participants[i].utilisateur;  
+                count++;    
+              }
+              }
+            } else {
+            }
+          },
+          function(err) {
+            console.log("error");
+          }
+        )
+        .catch((error) => {
+          alert("Error :" + error);
+        });
     },
 
     accueil() {
@@ -218,15 +199,24 @@ export default {
       this.$router.push("/profil");
     },
 
-    invitation() {
-      this.$router.push("/invitation");
+    participantAcepte() {
+      this.$router.push("/participantaccepte/" + this.$route.params.id);
     },
 
-    evenementPublic() {
-      this.$router.push("/evenementPublic");
+    tous() {
+      this.$router.push("/participant/" + this.$route.params.id);
+    },
+
+     participantRefuse() {
+      this.$router.push("/participantrefuse/" + this.$route.params.id);
     },
 
     afficherEvenement() {},
+
+    retour(){
+      //javascript: history.go(-1
+      this.$router.push("/evenement");
+    }
   },
 };
 </script>
@@ -1037,17 +1027,17 @@ $transition: 0.3s ease-out all;
   }
 }
 
-#retour{
-    background: rgba(255, 255, 255);
-    color:grey;
-    border-radius: 0px;
-    height: 15px;
-    justify-content: center;
-    margin-left: 8.2%;
+#retour {
+  background: rgba(255, 255, 255);
+  color: grey;
+  border-radius: 0px;
+  height: 15px;
+  justify-content: center;
+  margin-left: 8.2%;
 
-    &:hover{
-        border: none;
-        color: #484877ff;
-    }
+  &:hover {
+    border: none;
+    color: #484877ff;
+  }
 }
 </style>

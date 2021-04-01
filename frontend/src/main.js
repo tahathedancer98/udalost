@@ -19,6 +19,9 @@ window.api_back = axios.create({
   baseURL: "https://api.udalost.back:10043/"
 });
 
+window.map = axios.create({
+  baseURL: "https://maps.open-street.com/"
+});
 
 axios.interceptors.response.use(function (response) {
   return response;

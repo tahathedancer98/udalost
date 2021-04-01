@@ -153,7 +153,6 @@ export default {
     };
   },
   mounted() {
-    console.log(this.id);
   },
   methods: {
     modifierProfil() {
@@ -174,7 +173,6 @@ export default {
             config
           )
           .then((response) => {
-            console.log(response.data);
             this.$store.state.membre.utilisateur.prenom = this.prenom;
             this.$store.state.membre.utilisateur.nom = this.nom;
             this.$store.state.membre.utilisateur.username = this.username;
