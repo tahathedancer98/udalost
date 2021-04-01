@@ -220,7 +220,7 @@ export default {
     suppEvenement(id) {
       console.log('okkk');
       if(confirm('Voulez-vous supprimer cet événement ?')) {
-        api_web({
+        api_back({
           url: `http://localhost:8080/evenements/` + id,
           method: "DELETE",
         })
@@ -237,7 +237,7 @@ export default {
     supprEvenement() {
       console.log('okkk');
       if(confirm('Voulez-vous supprimer cet événement ?')) {
-        api_web({
+        api_back({
           url: `http://localhost:8080/evenements/` + this.eventRecherche.id,
           method: "DELETE",
         })
