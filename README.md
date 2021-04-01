@@ -12,7 +12,7 @@ git clone https://github.com/tahathedancer98/udalost.git
 
 4. Vous êtes de retour ? Alors vous allez désormais faire la même chose et suivre le README.md de la partie <b>mobile</b>.
 
-Merci d'avoir télécharger le projet !<br />
+Merci d'avoir télécharger le projet !<br /><br />
 <i>Projet réalisé dans le cadre d'un travail éducatif en <b>Licence Professionnelle Conception-Intégration d'Applications et Services Web pour l'Entreprise (CIASIE).</b></i>
 
 <b>Équipe :</b>
