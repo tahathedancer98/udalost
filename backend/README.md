@@ -38,7 +38,7 @@
 - <b>API web</b> : <a href="https://api.udalost.web:10243/">https://api.udalost.web:10243/</a>
 - <b>phpMyAdmin</b> : <a href="http://localhost:10480/">http://localhost:10480/</a>
 
-10. Voici ci-après les deux documentations pour utiliser l'API du backoffice et celle du Web/Mobile.<br />
+10. Voici ci-après les deux documentations pour utiliser l'API du backoffice et celle du Web/Mobile.<br /><br />
   <b><i>API Web/Mobile :</i></b>
 - <a href="https://documenter.getpostman.com/view/14785689/TzCHAABi">Utilisateur</a>
 - <a href="https://documenter.getpostman.com/view/14785689/TzCHAV8f">Événement</a>
