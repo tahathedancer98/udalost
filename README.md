@@ -28,7 +28,7 @@
 - Allez sur l'url suivante : <a href="http://localhost:10480/">http://localhost:10480/</a>
 - Connectez vous en entrant dans les deux champs (utilisateur et mot de passe) : <b>udalost</b>
 - Allez dans la section <b>"Importer"</b>
-- Importez en premier le schéma de la base de données (<b>schema_bd_udalost.sql</b>) que vous trouverez dans le dossier <b>"sql"</b> à la racine du projet puis appuyez sur le bouton <b>exécuter</b>
+- Importez en premier le schéma de la base de données (<b>schema_bd_udalost.sql</b>) que vous trouverez dans le dossier <b>"sql"</b> dans le dossier du backend du projet puis appuyez sur le bouton <b>exécuter</b>
 - Retournez dans la section <b>"Importer"</b>
 - Importez cette fois-ci les données de la base de données (<b>donnees_bd_udalost.sql</b>) qui sont toujours dans le même dossier <b>"sql"</b> et en appuyant à nouveau sur le bouton <b>exécuter</b> une fois importé
 
