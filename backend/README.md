@@ -39,8 +39,7 @@
 - <b>phpMyAdmin</b> : <a href="http://localhost:10480/">http://localhost:10480/</a>
 
 10. Voici ci-après les deux documentations pour utiliser l'API du backoffice et celle du Web/Mobile.<br />
-    <b><i>API Web/Mobile :</i></b>
-
+  <b><i>API Web/Mobile :</i></b>
 - <a href="https://documenter.getpostman.com/view/14785689/TzCHAABi">Utilisateur</a>
 - <a href="https://documenter.getpostman.com/view/14785689/TzCHAV8f">Événement</a>
 - <a href="https://documenter.getpostman.com/view/14785689/TzCHAVD6">Participant</a>
