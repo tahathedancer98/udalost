@@ -269,7 +269,7 @@ class UserController {
       $token = JWT::encode( ['iss' => 'https://api.udalost.web:10243/connexion',
           'aud' => 'https://api.udalost.web:10243',
           'lat' => time(),
-          'exp' => time()+3600,
+          'exp' => time()+3600000,
           'cid' => $user->id ],
           $secret, 'HS512'); 
 

@@ -225,7 +225,8 @@ export default {
           }
         )
         .catch((error) => {
-          // alert("Il n'y a pas d'utilisateurs");     
+          alert("Il n'y a pas d'utilisateurs");
+          
         });
     },
     trierEvenements() {
@@ -261,7 +262,8 @@ export default {
         })
           .then((response) => {
             console.log("L'utilisateur est bien supprimé");
-            location.reload();
+            // this.$router.push("/gestionCompte");
+            // location.reload();
           })
           .catch((error) => {
             console.log("Error ========>", error);

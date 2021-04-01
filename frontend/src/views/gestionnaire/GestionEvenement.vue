@@ -109,7 +109,7 @@
       <div class="ui link cards stackable five column grid" id="cardsEvenementRecherche" style='justify-content:center;text-align:center;' >
         <a id="cardDivRecherche" class="card column">
           <div id="iconB">
-            <button class='large red trash alternate icon' @click="supprEvenement();">SUPP</button>
+            <button class='large red trash alternate icon' @click="suppEvenement();">SUPP</button>
           </div>
           <div class="image" id="imageCard">
             <img src="../../assets/images/iconCalendar.png" />
@@ -220,7 +220,7 @@ export default {
     suppEvenement(id) {
       console.log('okkk');
       if(confirm('Voulez-vous supprimer cet événement ?')) {
-        api_back({
+        api_web({
           url: `http://localhost:8080/evenements/` + id,
           method: "DELETE",
         })
@@ -237,7 +237,7 @@ export default {
     supprEvenement() {
       console.log('okkk');
       if(confirm('Voulez-vous supprimer cet événement ?')) {
-        api_back({
+        api_web({
           url: `http://localhost:8080/evenements/` + this.eventRecherche.id,
           method: "DELETE",
         })

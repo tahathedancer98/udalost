@@ -339,10 +339,10 @@ export default {
           this.comments.push(response.data.evenement[0].participants[0][0].participant.commentaires[i]);
         }
 
-        for(var i=0; i<response.data.evenement[0].participantsNonInscrits[0][0].participantNonInscrit.commentaires.length; i++){  
-          console.log("PARTICIPANTE NO INSCRITO");
-          this.comments.push(response.data.evenement[0].participantsNonInscrits[0][0].participantNonInscrit.commentaires[i]);
-        }
+        // for(var i=0; i<response.data.evenement[0].participantsNonInscrits[0][0].participantNonInscrit.commentaires.length; i++){  
+        //   console.log("PARTICIPANTE NO INSCRITO");
+        //   this.comments.push(response.data.evenement[0].participantsNonInscrits[0][0].participantNonInscrit.commentaires[i]);
+        // }
 
           this.totalParticipants =
             response.data.evenement[0].participants.count +
@@ -406,7 +406,7 @@ export default {
             this.$route.params.id +
             "/commentaires",
           {
-            id_participant: 32,//Modif ici pour ... 
+            id_participant: 44,//Modif ici pour ... 
             texte: this.texte,
             lien: this.lien,
           }
