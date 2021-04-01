@@ -8,7 +8,7 @@ git clone https://github.com/tahathedancer98/udalost.git
 
 2. Une fois cloné, allez vous référer au README.md de la partie <b>backend</b> puis revenez ici.
 
-3. Une fois les installations de l'étape précédentes réalisées, allez aussi vous référer au README.md de la partie <b>frontend</b> puis revenez ici.
+3. Une fois les installations de l'étape précédente réalisées, allez aussi vous référer au README.md de la partie <b>frontend</b> puis revenez ici.
 
 4. Vous êtes de retour ? Alors vous allez désormais faire la même chose et suivre le README.md de la partie <b>mobile</b>.
 
