@@ -263,7 +263,7 @@ export default {
           .then((response) => {
             console.log("L'utilisateur est bien supprimé");
             // this.$router.push("/gestionCompte");
-            // location.reload();
+            location.reload();
           })
           .catch((error) => {
             console.log("Error ========>", error);
