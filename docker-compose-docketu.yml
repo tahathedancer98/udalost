@@ -19,8 +19,8 @@ services:
       - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
       - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
     ports:
-      - "10081:80"
-      - "10443:443"
+      - "10080:80"
+      - "10043:443"
     volumes:
       - ./backend/backoffice/public:/var/www/back
       - ./backend/backoffice/src:/var/www/src
@@ -39,8 +39,8 @@ services:
       - http_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
       - https_proxy=http://www-cache.iutnc.univ-lorraine.fr:3128
     ports:
-      - "10281:80"
-      - "10643:443"
+      - "10280:80"
+      - "10143:443"
     volumes:
       - ./backend/webapp/public:/var/www/web
       - ./backend/webapp/src:/var/www/src
@@ -71,7 +71,7 @@ services:
   myadmin:
     image: phpmyadmin/phpmyadmin:latest
     ports:
-      - "10481:80"
+      - "10480:80"
     links:
       - mysql:db
 
