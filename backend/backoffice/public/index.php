@@ -27,16 +27,12 @@ DataBaseConnection::startEloquent($api_container->settings['db']);
 // Utilisateurs
 // Afficher tous les utilisateurs
 $app->get('/utilisateurs[/]', UserController::class . ':users')->setName('utilisateurs');
-// Afficher un utilisateur en particulier
-$app->get('/utilisateurs/{id}[/]', UserController::class . ':aUser')->setName('utilisateur');
 // Se connecter à son compte 
 $app->delete('/utilisateurs/{id}[/]', UserController::class.':deleteUser')->setName('supprimerUtilisateur');
 
 // Événements
 // Afficher tous les événements
 $app->get('/evenements[/]', EventController::class . ':events')->setName('evenements');
-// Afficher un événement en particulier
-$app->get('/evenements/{id}[/]', EventController::class . ':anEvent')->setName('evenement');
 // Supprimer un événement
 $app->delete('/evenements/{id}[/]', EventController::class.':deleteEvent')->setName('supprimerEvenement');
 
